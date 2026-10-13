@@ -6,10 +6,7 @@ import type { DragEvent } from "react";
 import { courses } from "../data/lib/reviews";
 
 import GradeSelector from "./GradeSelector";
-import {
-  gradeThemes,
-  type Grade,
-} from "../data/lib/grade-theme";
+import type { Grade } from "../data/lib/grade-theme";
 
 
 type ScheduleItem = {
@@ -83,32 +80,22 @@ export default function TimetableApp({
     [],
   );
   const [selectedGrade, setSelectedGrade] = useState<Grade>(1);
-  const gradeTheme = gradeThemes[selectedGrade];
 
   useEffect(() => {
-    try {
-      const storedSchedule = localStorage.getItem(SCHEDULE_KEY);
-      if (storedSchedule) {
-        const parsed: unknown = JSON.parse(storedSchedule);
-        if (Array.isArray(parsed)) {
-          setSchedule(parsed as ScheduleItem[]);
-        }
-      }
+    if (!ready) return;
 
-      const storedTheme = localStorage.getItem(THEME_KEY);
-      if (
-        storedTheme === "light" ||
-        storedTheme === "dark" ||
-        storedTheme === "system"
-      ) {
-        setTheme(storedTheme);
-      }
-    } catch {
-      // 保存データが壊れている場合は初期状態で起動
+    const root = document.documentElement;
+
+    if (theme === "system") {
+      root.removeAttribute("data-theme");
+      root.style.colorScheme = "light dark";
+    } else {
+      root.dataset.theme = theme;
+      root.style.colorScheme = theme;
     }
 
-    setReady(true);
-  }, []);
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme, ready]);
 
   useEffect(() => {
     if (!ready) return;
