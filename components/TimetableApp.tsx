@@ -523,3 +523,131 @@ export default function TimetableApp({
     </div>
   );
 }
+
+/* ========================================
+   スマホ対応
+   対象: app/globals.css の末尾に追加
+======================================== */
+
+/* 画面幅による意図しない横はみ出しを防ぐ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.root {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* パネルや主要コンテンツが画面幅を超えないようにする */
+.root .panel,
+.root .topbar,
+.root .grid-wrap {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* 時間割だけを横スクロール可能にする */
+.root .grid-wrap {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.root .timetable {
+  min-width: 600px;
+}
+
+/* タブレット・スマートフォン */
+@media (max-width: 768px) {
+  .root {
+    padding: 12px;
+  }
+
+  .root .topbar {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .root .panel {
+    padding: 12px;
+  }
+
+  .root .grid-wrap {
+    padding: 8px;
+  }
+
+  .root .timetable {
+    min-width: 580px;
+  }
+
+  .root .day,
+  .root .period {
+    font-size: 12px;
+    padding: 6px 4px;
+  }
+
+  .root .course-block {
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+
+  .root button,
+  .root input,
+  .root select,
+  .root textarea {
+    max-width: 100%;
+  }
+}
+
+/* 小型スマートフォン */
+@media (max-width: 480px) {
+  .root {
+    padding: 8px;
+  }
+
+  .root .panel {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .root .grid-wrap {
+    padding: 6px;
+  }
+
+  .root .timetable {
+    min-width: 560px;
+  }
+
+  .root .course-block {
+    padding: 4px;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .root .nav {
+    max-width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .root .nav button {
+    flex-shrink: 0;
+  }
+}
