@@ -43,4 +43,3 @@ next-env.d.ts
 #DB .env
 .env.local
 scripts/local/
-data/generated/
