@@ -5,6 +5,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { DragEvent } from "react";
 import { courses } from "../data/lib/reviews";
 
+import GradeSelector from "./GradeSelector";
+import {
+  gradeThemes,
+  type Grade,
+} from "../data/lib/grade-theme";
+
+
 type ScheduleItem = {
   id: string;
   code: string;
@@ -75,6 +82,8 @@ export default function TimetableApp({
       courses.reduce((sum, course) => sum + course.reviews.length, 0),
     [],
   );
+  const [selectedGrade, setSelectedGrade] = useState<Grade>(1);
+  const gradeTheme = gradeThemes[selectedGrade];
 
   useEffect(() => {
     try {
@@ -231,7 +240,7 @@ export default function TimetableApp({
         : "◐ 自動";
 
   return (
-    <div className="root">
+    <div className="root" data-grade={selectedGrade}>
       <header className="topbar">
         <Link href="/" className="brand" aria-label="履修ナビ トップ">
           <span className="logo">履</span>
@@ -272,6 +281,10 @@ export default function TimetableApp({
               <span className="pill">自動保存 · このブラウザ内</span>
             </div>
 
+            <GradeSelector
+              value={selectedGrade}
+              onChange={setSelectedGrade}
+            />
             <div className="workspace">
               <section className="panel">
                 <div className="schedule-tools">

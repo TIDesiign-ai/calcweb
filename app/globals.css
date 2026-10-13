@@ -47,7 +47,10 @@ body {
 button, input { font: inherit; }
 button { cursor: pointer; }
 a { color: inherit; text-decoration: none; }
-.root { min-height: 100vh; background: var(--bg); }
+.root {
+  min-height: 100vh;
+  background: var(--bg);
+}
 
 .topbar {
   height: 72px;
@@ -360,4 +363,201 @@ a { color: inherit; text-decoration: none; }
     grid-template-rows: 34px repeat(5, 85px);
     min-width: 625px;
   }
+}
+
+/* 学年別テーマ */
+/* 選択中の科目・操作中のアクセント */
+.root .course-choice.selected {
+  border-color: var(--grade-primary);
+  background: var(--grade-soft);
+}
+
+.root .action:not(.secondary) {
+  background: var(--grade-primary);
+  border-color: var(--grade-primary);
+  color: white;
+}
+
+/* 1年：緑 */
+.root[data-grade="1"] {
+  --grade-primary: #16a34a;
+  --grade-soft: #f0fdf4;
+  --grade-border: #86efac;
+  --grade-text: #166534;
+}
+
+/* 2年：青 */
+.root[data-grade="2"] {
+  --grade-primary: #2563eb;
+  --grade-soft: #eff6ff;
+  --grade-border: #93c5fd;
+  --grade-text: #1d4ed8;
+}
+
+
+/* 3年：水色 */
+.root[data-grade="3"] {
+  --grade-primary: #0891b2;
+  --grade-soft: #ecfeff;
+  --grade-border: #67e8f9;
+  --grade-text: #0e7490;
+}
+
+/* 4年：紫 */
+.root[data-grade="4"] {
+  --grade-primary: #9333ea;
+  --grade-soft: #faf5ff;
+  --grade-border: #d8b4fe;
+  --grade-text: #7e22ce;
+}
+
+/* ヘッダー・ナビゲーション */
+.root .topbar {
+  border-bottom-color: var(--grade-border);
+}
+
+.root .logo {
+  background: var(--grade-primary);
+  color: white;
+}
+
+.root .nav button.active {
+  color: var(--grade-primary);
+  border-color: var(--grade-primary);
+}
+
+/* 見出し・アクセント */
+.root .eyebrow {
+  color: var(--grade-primary);
+}
+
+.root .pill {
+  border-color: var(--grade-border);
+  background: var(--grade-soft);
+  color: var(--grade-text);
+}
+
+/* パネル・科目選択 */
+.root .panel {
+  border-color: var(--grade-border);
+}
+
+.root .course-choice.selected {
+  border-color: var(--grade-primary);
+  background: var(--grade-soft);
+}
+
+.root .course-choice.selected .swatch {
+  background: var(--grade-primary) !important;
+}
+
+/* 操作ボタン */
+.root .action:not(.secondary) {
+  background: var(--grade-primary);
+  border-color: var(--grade-primary);
+  color: white;
+}
+/* 時間割エリア全体を学年カラーで塗る */
+.root .grid-wrap {
+  background: var(--grade-soft);
+}
+
+/* 曜日ヘッダー */
+.root .day {
+  background: var(--grade-primary);
+  color: #ffffff;
+  border-radius: 8px;
+}
+
+/* 時限ラベル */
+.root .period {
+  background: var(--grade-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+}
+
+/* 時間割の空きマス */
+.root .slot {
+  background: var(--grade-soft);
+  border: 1px solid var(--grade-border);
+  border-radius: 11px;
+}
+
+/* 空きマスにマウスを乗せたとき */
+.root .slot-ready:hover {
+  background: var(--grade-border);
+  border-color: var(--grade-primary);
+}
+/* ========================================
+   ダークモード：学年別カラー
+   ======================================== */
+
+/* 1年：グリーン */
+:root[data-theme="dark"] .root[data-grade="1"] {
+  --grade-primary: #22c55e;
+  --grade-soft: #17291f;
+  --grade-border: #356847;
+  --grade-text: #a7f3b8;
+}
+
+/* 2年：ブルー */
+:root[data-theme="dark"] .root[data-grade="2"] {
+  --grade-primary: #3b82f6;
+  --grade-soft: #172338;
+  --grade-border: #345b8c;
+  --grade-text: #bfdbfe;
+}
+
+/* 3年：シアン */
+:root[data-theme="dark"] .root[data-grade="3"] {
+  --grade-primary: #22d3ee;
+  --grade-soft: #14272d;
+  --grade-border: #28616d;
+  --grade-text: #a5f3fc;
+}
+
+/* 4年：パープル */
+:root[data-theme="dark"] .root[data-grade="4"] {
+  --grade-primary: #c084fc;
+  --grade-soft: #251b32;
+  --grade-border: #624080;
+  --grade-text: #e9d5ff;
+}
+
+/* 時間割エリア全体 */
+:root[data-theme="dark"] .root .grid-wrap {
+  background: var(--grade-soft);
+}
+
+/* 時間割の空きマス */
+:root[data-theme="dark"] .root .slot {
+  background: var(--grade-soft);
+  border-color: var(--grade-border);
+}
+
+/* 空きマスにマウスを乗せたとき */
+:root[data-theme="dark"] .root .slot-ready:hover {
+  background: var(--grade-border);
+  border-color: var(--grade-primary);
+}
+
+/* 時限ラベル */
+:root[data-theme="dark"] .root .period {
+  background: var(--grade-primary);
+  color: #101116;
+  border: none;
+}
+
+/* 曜日ラベル */
+:root[data-theme="dark"] .root .day {
+  background: var(--grade-primary);
+  color: #101116;
+}
+
+/* 選択中の科目 */
+:root[data-theme="dark"] .root .course-choice.selected {
+  background: var(--grade-soft);
+  border-color: var(--grade-primary);
+  color: var(--text);
 }
