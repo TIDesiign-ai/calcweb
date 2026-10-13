@@ -82,20 +82,36 @@ export default function TimetableApp({
   const [selectedGrade, setSelectedGrade] = useState<Grade>(1);
 
   useEffect(() => {
-    if (!ready) return;
+    // 保存済みの時間割を復元
+    try {
+      const storedSchedule = localStorage.getItem(SCHEDULE_KEY);
 
-    const root = document.documentElement;
+      if (storedSchedule) {
+        const parsed: unknown = JSON.parse(storedSchedule);
 
-    if (theme === "system") {
-      root.removeAttribute("data-theme");
-      root.style.colorScheme = "light dark";
-    } else {
-      root.dataset.theme = theme;
-      root.style.colorScheme = theme;
+        if (Array.isArray(parsed)) {
+          setSchedule(parsed as ScheduleItem[]);
+        }
+      }
+    } catch {
+      // 時間割データが壊れている場合は初期状態で起動
     }
 
-    localStorage.setItem(THEME_KEY, theme);
-  }, [theme, ready]);
+    // 保存済みのテーマを復元
+    const storedTheme = localStorage.getItem(THEME_KEY);
+
+    if (
+      storedTheme === "light" ||
+      storedTheme === "dark" ||
+      storedTheme === "system"
+    ) {
+      setTheme(storedTheme);
+    }
+
+    // 初期読み込み完了
+    setReady(true);
+  }, []);
+
 
   useEffect(() => {
     if (!ready) return;
