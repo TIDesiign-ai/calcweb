@@ -222,8 +222,8 @@ a { color: inherit; text-decoration: none; }
   margin-top: auto;
   align-items: center;
 }
-.mini {
-  border: 0;
+:root[data-theme="dark"] .mini {
+  border: 1px solid #ffffff25;;
   border-radius: 6px;
   background: #ffffff88;
   color: inherit;
