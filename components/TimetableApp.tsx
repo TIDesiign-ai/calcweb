@@ -50,8 +50,16 @@ function ReviewCard({ code }: { code: string }) {
   );
 }
 
-export default function TimetableApp() {
-  const [page, setPage] = useState<"timetable" | "courses">("timetable");
+type TimetableAppProps = {
+  initialPage?: "timetable" | "courses";
+};
+
+export default function TimetableApp({
+  initialPage = "timetable",
+}: TimetableAppProps) {
+  const [page, setPage] = useState<"timetable" | "courses">(
+    initialPage,
+  );
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const [theme, setTheme] = useState<Theme>("system");
   const [ready, setReady] = useState(false);

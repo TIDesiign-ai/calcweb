@@ -1,16 +1,25 @@
 import rawReviews from "./reviews.json";
+import { courseConfig } from "./course-config";
 
 export const courses = Object.entries(rawReviews).map(
-  ([name, data]) => ({
-    code: encodeURIComponent(name),
-    name,
-    rating: data.rating,
-    reviews: data.reviews,
-  }),
+  ([name, data]) => {
+    const config = courseConfig[name];
+
+    return {
+      name,
+      code: config?.code ?? name,
+      color: config?.color ?? "#e5e7eb",
+      textColor: config?.textColor ?? "#374151",
+      rating: data.rating,
+      reviews: data.reviews,
+    };
+  },
 );
 
+export function getCourseByName(name: string) {
+  return courses.find((course) => course.name === name);
+}
+
 export function getCourseByCode(code: string) {
-  return courses.find(
-    (course) => course.code === code,
-  );
+  return courses.find((course) => course.code === code);
 }
