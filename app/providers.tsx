@@ -10,7 +10,7 @@ type ProvidersProps = {
 export function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider
-      attribute="class"
+      attribute="data-theme"
       defaultTheme="system"
       enableSystem
       disableTransitionOnChange
