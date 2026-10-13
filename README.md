@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 履修ナビ — Next.js
 
-## Getting Started
+時間割の作成と科目口コミの閲覧を行う Next.js App Router プロジェクトです。
 
-First, run the development server:
+## 必要環境
+- Node.js 20.9 以上
+- npm
 
+## 開発起動
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+ブラウザで http://localhost:3000 を開きます。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 本番ビルド
+```bash
+npm run build
+```
+`next.config.ts` で `output: "export"` を設定しているため、静的ファイルが `out/` に生成されます。Vercel などの静的ホスティングへ配置できます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 主な機能
+- 科目パレットから時間割へのドラッグ＆ドロップ
+- 配置後の科目ブロックの移動、削除、同一コマの重複防止
+- 科目ごとの口コミ一覧・詳細ページ
+- ライト / ダーク / システムテーマ
+- 時間割とテーマを localStorage に保存
+- スマートフォン・PC対応
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## データ編集
+`src/data/reviews.json` を編集します。現在の口コミはUI確認用サンプルデータです。実際の口コミ投稿・認証・管理機能、DB/API連携は未実装です。
 
-## Learn More
+## URL
+- `/` 時間割
+- `/timetable/` 時間割
+- `/courses/` 口コミ一覧
+- `/courses/科目名/` 科目詳細
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+初期段階では科目名をURL識別子に使用しています。運用時には科目コードを識別子にする構成へ移行するのがおすすめです。
