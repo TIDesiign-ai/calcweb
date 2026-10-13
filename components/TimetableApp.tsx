@@ -1,5 +1,6 @@
 "use client";
 
+
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { DragEvent } from "react";
@@ -16,12 +17,14 @@ type ScheduleItem = {
   period: number;
 };
 
-type Theme = "system" | "light" | "dark";
+type Theme = "light" | "dark";
 
 const DAYS = ["月", "火", "水", "木", "金", "土"];
 const PERIODS = ["1限", "2限", "3限", "4限", "5限"];
 const SCHEDULE_KEY = "course-nav-schedule";
 const THEME_KEY = "course-nav-theme";
+
+console.log("[DEBUG] TimetableApp rendered");
 
 function makeId() {
   return `${Date.now().toString(36)}-${Math.random()
@@ -65,7 +68,7 @@ export default function TimetableApp({
     initialPage,
   );
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
-  const [theme, setTheme] = useState<Theme>("system");
+  const [theme, setTheme] = useState<Theme>("light");
   const [ready, setReady] = useState(false);
   const [pendingCode, setPendingCode] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState("");
@@ -97,16 +100,23 @@ export default function TimetableApp({
       // 時間割データが壊れている場合は初期状態で起動
     }
 
-    // 保存済みのテーマを復元
-    const storedTheme = localStorage.getItem(THEME_KEY);
 
-    if (
-      storedTheme === "light" ||
-      storedTheme === "dark" ||
-      storedTheme === "system"
-    ) {
-      setTheme(storedTheme);
-    }
+      // 保存済みのテーマを復元
+      const storedTheme = localStorage.getItem(THEME_KEY);
+
+      console.log("[Theme Debug] 保存値:", storedTheme);
+      console.log(
+        "[Theme Debug] OSのダークモード:",
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      );
+
+      if (storedTheme === "light" || storedTheme === "dark") {
+        setTheme(storedTheme);
+        console.log("[Theme Debug] 復元したテーマ:", storedTheme);
+      } else {
+        console.log("[Theme Debug] 有効な保存値なし。初期値を使用:", theme);
+      }
+
 
     // 初期読み込み完了
     setReady(true);
@@ -121,10 +131,17 @@ export default function TimetableApp({
   useEffect(() => {
     if (!ready) return;
 
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme =
-      theme === "system" ? "light dark" : theme;
+    const isDark = theme === "dark";
+
+    document.documentElement.dataset.theme = isDark ? "dark" : "light";
+    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+
     localStorage.setItem(THEME_KEY, theme);
+
+    console.log("[Theme Debug] 適用テーマ:", {
+      theme,
+      dark: isDark,
+    });
   }, [theme, ready]);
 
   useEffect(() => {
@@ -206,13 +223,7 @@ export default function TimetableApp({
   };
 
   const changeTheme = () => {
-    setTheme((current) =>
-      current === "system"
-        ? "light"
-        : current === "light"
-          ? "dark"
-          : "system",
-    );
+    setTheme((current) => (current === "light" ? "dark" : "light"));
   };
 
   const onDrop = (
