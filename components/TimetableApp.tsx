@@ -101,21 +101,27 @@ export default function TimetableApp({
     }
 
 
-      // 保存済みのテーマを復元
-      const storedTheme = localStorage.getItem(THEME_KEY);
+    // 保存済みのテーマを復元
+    const storedTheme = localStorage.getItem(THEME_KEY);
 
-      console.log("[Theme Debug] 保存値:", storedTheme);
-      console.log(
-        "[Theme Debug] OSのダークモード:",
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      );
+    if (storedTheme === "light" || storedTheme === "dark") {
+      // ユーザーが選択したテーマを優先
+      setTheme(storedTheme);
+      console.log("[Theme Debug] 保存値を復元:", storedTheme);
+    } else {
+      // 保存値がなければブラウザ・OSの設定を読む
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
 
-      if (storedTheme === "light" || storedTheme === "dark") {
-        setTheme(storedTheme);
-        console.log("[Theme Debug] 復元したテーマ:", storedTheme);
-      } else {
-        console.log("[Theme Debug] 有効な保存値なし。初期値を使用:", theme);
-      }
+      const initialTheme: Theme = prefersDark ? "dark" : "light";
+
+      setTheme(initialTheme);
+      console.log("[Theme Debug] システム設定から初期化:", {
+        prefersDark,
+        initialTheme,
+      });
+    }
 
 
     // 初期読み込み完了
