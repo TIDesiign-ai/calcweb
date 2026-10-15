@@ -323,37 +323,45 @@ export default function TimetableApp({
             />
             <div className="workspace">
               <section className="panel">
-                <div className="schedule-actions">
-                  <div
-                    className={`trash-dropzone${trashActive ? " active" : ""}`}
-                    onDragOver={(event) => {
-                      event.preventDefault();
-                      event.dataTransfer.dropEffect = "move";
-                    }}
-                    onDragEnter={() => setTrashActive(true)}
-                    onDragLeave={(event) => {
-                      if (
-                        !event.currentTarget.contains(
-                          event.relatedTarget as Node | null,
-                        )
-                      ) {
-                        setTrashActive(false);
-                      }
-                    }}
-                    onDrop={onTrashDrop}
-                    role="region"
-                    aria-label="科目の削除エリア"
-                  >
-                    <span aria-hidden="true">🗑</span>
-                    <span>ここにドロップして削除</span>
+                <div className="schedule-tools">
+                  <div>
+                    <strong>マイ時間割</strong>
+                    <div className="small-muted">
+                      月曜日 — 土曜日 ／ 1〜5限
+                    </div>
                   </div>
+                  <div className="schedule-actions">
+                    <div
+                      className={`trash-dropzone${trashActive ? " active" : ""}`}
+                      onDragOver={(event) => {
+                        event.preventDefault();
+                        event.dataTransfer.dropEffect = "move";
+                      }}
+                      onDragEnter={() => setTrashActive(true)}
+                      onDragLeave={(event) => {
+                        if (
+                          !event.currentTarget.contains(
+                            event.relatedTarget as Node | null,
+                          )
+                        ) {
+                          setTrashActive(false);
+                        }
+                      }}
+                      onDrop={onTrashDrop}
+                      role="region"
+                      aria-label="科目の削除エリア"
+                    >
+                      <span aria-hidden="true">🗑</span>
+                      <span>ここにドロップして削除</span>
+                    </div>
 
-                  <button
-                    className="action secondary"
-                    onClick={clearSchedule}
-                  >
-                    時間割をリセット
-                  </button>
+                    <button
+                      className="action secondary"
+                      onClick={clearSchedule}
+                    >
+                      時間割をリセット
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid-wrap">
