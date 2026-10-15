@@ -585,7 +585,7 @@ export default function TimetableApp({
                   <div>
                     <strong>マ イ 時 間 割</strong>
                     <div className="small-muted">
-                      月曜日 — 土曜日
+                      月曜日 — 金曜日
                     </div>
                   </div>
 
