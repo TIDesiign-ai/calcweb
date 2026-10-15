@@ -174,8 +174,8 @@ a { color: inherit; text-decoration: none; }
 .grid-wrap { overflow: auto; padding: 12px; }
 .timetable {
   display: grid;
-  grid-template-columns: 58px repeat(6, minmax(90px, 1fr));
-  grid-template-rows: 45px repeat(6, 120px);
+  grid-template-columns: 58px repeat(5, minmax(90px, 1fr));
+  grid-template-rows: 45px repeat(8, 120px);
   min-width: 690px;
   gap: 5px;
 }
