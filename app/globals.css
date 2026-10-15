@@ -659,22 +659,46 @@ body {
     border-radius: 12px;
   }
 
-  /* スマホ：時間割の構造を維持して全体を縮小 */
-  @media (max-width: 480px) {
-    .root .grid-wrap {
-      width: 100%;
-      min-width: 0;
-      padding: 4px;
-      overflow-x: hidden;
-    }
 
+  /* スマホのみ：既存の時間割グリッドを縮小 */
+  @media (max-width: 600px) {
     .root .timetable {
       width: 100%;
       min-width: 0;
-      transform: scale(1);
-      transform-origin: top left;
+      grid-template-columns: 30px repeat(6, minmax(0, 1fr));
+      grid-template-rows: 30px repeat(5, 85px);
+      gap: 2px;
+    }
+
+    .root .grid-wrap {
+      padding: 6px;
+      overflow-x: hidden;
+    }
+
+    .root .day,
+    .root .period {
+      min-width: 0;
+      font-size: 10px;
+      overflow-wrap: anywhere;
+    }
+
+    .root .course-block {
+      inset: 2px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .root .course-block strong {
+      font-size: 9px;
+      overflow-wrap: anywhere;
+    }
+
+    .root .course-block small {
+      font-size: 8px;
+      overflow-wrap: anywhere;
     }
   }
+
 
   .root .course-block {
     padding: 4px;
