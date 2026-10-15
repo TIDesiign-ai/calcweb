@@ -32,7 +32,7 @@ const TIMETABLE_ROWS = [
   { label: "3限", start: "13:40", end: "15:20", periodIndex: 2 },
   { label: "4限", start: "15:30", end: "17:10", periodIndex: 3 },
   { label: "5限", start: "17:20", end: "19:00", periodIndex: 4 },
-  { label: "放課後", start: "19:30", end: "20:00", periodIndex: null },
+  { label: "放課後", start: "19:00", end: "20:00", periodIndex: null },
 ] as const;
 
 type CustomBlock = {
