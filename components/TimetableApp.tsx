@@ -24,7 +24,33 @@ const PERIODS = ["1限", "2限", "3限", "4限", "5限"];
 const SCHEDULE_KEY = "course-nav-schedule";
 const THEME_KEY = "course-nav-theme";
 
-console.log("[DEBUG] TimetableApp rendered");
+
+const TIMETABLE_ROWS = [
+  { label: "1限", start: "9:10", end: "10:50", periodIndex: 0 },
+  { label: "2限", start: "11:00", end: "12:40", periodIndex: 1 },
+  { label: "昼休み", start: "12:40", end: "13:40", periodIndex: null },
+  { label: "3限", start: "13:40", end: "15:20", periodIndex: 2 },
+  { label: "4限", start: "15:30", end: "17:10", periodIndex: 3 },
+  { label: "5限", start: "17:20", end: "19:00", periodIndex: 4 },
+] as const;
+
+type CustomBlock = {
+  id: string;
+  title: string;
+  memo: string;
+  color: string;
+};
+
+type ScheduleEvent = {
+  id: string;
+  blockId: string;
+  day: number;
+  rowIndex: number;
+};
+
+const CUSTOM_BLOCKS_KEY = "course-nav-custom-blocks";
+const EVENTS_KEY = "course-nav-events";
+const DEFAULT_EVENT_COLOR = "#8b7cf6";
 
 function makeId() {
   return `${Date.now().toString(36)}-${Math.random()
@@ -75,6 +101,8 @@ export default function TimetableApp({
   const [dragging, setDragging] = useState<{
     code: string;
     id?: string;
+    kind?: "event" | "custom";
+    blockId?: string;
   } | null>(null);
   const [trashActive, setTrashActive] = useState(false);
 
@@ -85,55 +113,265 @@ export default function TimetableApp({
   );
   const [selectedGrade, setSelectedGrade] = useState<Grade>(1);
 
-  useEffect(() => {
-    // 保存済みの時間割を復元
-    try {
-      const storedSchedule = localStorage.getItem(SCHEDULE_KEY);
+  const [events, setEvents] = useState<ScheduleEvent[]>([]);
+  const [customBlocks, setCustomBlocks] = useState<CustomBlock[]>([]);
+  const [pendingCustomBlockId, setPendingCustomBlockId] =
+    useState<string | null>(null);
 
+  const [showEventForm, setShowEventForm] = useState(false);
+  const [eventTitle, setEventTitle] = useState("");
+  const [eventMemo, setEventMemo] = useState("");
+  const [eventColor, setEventColor] = useState(DEFAULT_EVENT_COLOR);
+
+  useEffect(() => {
+    try {
+      const storedBlocks = localStorage.getItem(CUSTOM_BLOCKS_KEY);
+      if (storedBlocks) {
+        const parsed: unknown = JSON.parse(storedBlocks);
+        if (Array.isArray(parsed)) {
+          setCustomBlocks(parsed as CustomBlock[]);
+        }
+      }
+
+      const storedEvents = localStorage.getItem(EVENTS_KEY);
+      if (storedEvents) {
+        const parsed: unknown = JSON.parse(storedEvents);
+
+        if (Array.isArray(parsed)) {
+          // 新形式の配置データを復元
+          if (
+            parsed.every(
+              (item) =>
+                typeof item === "object" &&
+                item !== null &&
+                "blockId" in item,
+            )
+          ) {
+            setEvents(parsed as ScheduleEvent[]);
+          } else {
+            // 旧形式の予定データがあれば、新形式へ移行
+            const legacy = parsed as {
+              id: string;
+              title: string;
+              day: number;
+              rowIndex: number;
+            }[];
+
+            const blockByTitle = new Map<string, CustomBlock>();
+            const migratedEvents: ScheduleEvent[] = [];
+
+            for (const item of legacy) {
+              if (
+                typeof item.title !== "string" ||
+                typeof item.day !== "number" ||
+                typeof item.rowIndex !== "number"
+              ) {
+                continue;
+              }
+
+              let block = blockByTitle.get(item.title);
+
+              if (!block) {
+                block = {
+                  id: makeId(),
+                  title: item.title,
+                  memo: "",
+                  color: DEFAULT_EVENT_COLOR,
+                };
+                blockByTitle.set(item.title, block);
+              }
+
+              migratedEvents.push({
+                id: item.id || makeId(),
+                blockId: block.id,
+                day: item.day,
+                rowIndex: item.rowIndex,
+              });
+            }
+
+            if (migratedEvents.length > 0) {
+              setCustomBlocks((current) => [
+                ...current,
+                ...Array.from(blockByTitle.values()),
+              ]);
+              setEvents(migratedEvents);
+            }
+          }
+        }
+      }
+
+      const storedSchedule = localStorage.getItem(SCHEDULE_KEY);
       if (storedSchedule) {
         const parsed: unknown = JSON.parse(storedSchedule);
-
         if (Array.isArray(parsed)) {
           setSchedule(parsed as ScheduleItem[]);
         }
       }
     } catch {
-      // 時間割データが壊れている場合は初期状態で起動
+      console.warn("保存データを読み込めませんでした。");
     }
 
-
-    // 保存済みのテーマを復元
     const storedTheme = localStorage.getItem(THEME_KEY);
 
     if (storedTheme === "light" || storedTheme === "dark") {
-      // ユーザーが選択したテーマを優先
       setTheme(storedTheme);
-      console.log("[Theme Debug] 保存値を復元:", storedTheme);
     } else {
-      // 保存値がなければブラウザ・OSの設定を読む
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-
-      const initialTheme: Theme = prefersDark ? "dark" : "light";
-
-      setTheme(initialTheme);
-      console.log("[Theme Debug] システム設定から初期化:", {
-        prefersDark,
-        initialTheme,
-      });
+      setTheme(
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light",
+      );
     }
 
-
-    // 初期読み込み完了
     setReady(true);
   }, []);
-
-
   useEffect(() => {
     if (!ready) return;
     localStorage.setItem(SCHEDULE_KEY, JSON.stringify(schedule));
   }, [schedule, ready]);
+
+  useEffect(() => {
+    if (!ready) return;
+    localStorage.setItem(CUSTOM_BLOCKS_KEY, JSON.stringify(customBlocks));
+  }, [customBlocks, ready]);
+
+  useEffect(() => {
+    if (!ready) return;
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+  }, [events, ready]);
+
+  const addCustomBlock = () => {
+    const title = eventTitle.trim();
+
+    if (!title) {
+      notify("予定名を入力してください");
+      return;
+    }
+
+    const block: CustomBlock = {
+      id: makeId(),
+      title,
+      memo: eventMemo.trim(),
+      color: eventColor,
+    };
+
+    setCustomBlocks((current) => [...current, block]);
+    setEventTitle("");
+    setEventMemo("");
+    setEventColor(DEFAULT_EVENT_COLOR);
+    setShowEventForm(false);
+    notify(`「${title}」を登録しました`);
+  };
+
+  const addEvent = (
+    blockId: string,
+    day: number,
+    rowIndex: number,
+  ) => {
+    const block = customBlocks.find((item) => item.id === blockId);
+    const row = TIMETABLE_ROWS[rowIndex];
+
+    if (!block || !row) return;
+
+    const occupiedByCourse =
+      row.periodIndex !== null &&
+      schedule.some(
+        (item) =>
+          item.day === day && item.period === row.periodIndex,
+      );
+
+    const occupiedByEvent = events.some(
+      (item) => item.day === day && item.rowIndex === rowIndex,
+    );
+
+    if (occupiedByCourse || occupiedByEvent) {
+      notify("このマスにはすでに予定があります");
+      return;
+    }
+
+    setEvents((current) => [
+      ...current,
+      {
+        id: makeId(),
+        blockId,
+        day,
+        rowIndex,
+      },
+    ]);
+
+    setPendingCustomBlockId(null);
+    notify(`「${block.title}」を配置しました`);
+  };
+
+  const moveEvent = (
+    id: string,
+    day: number,
+    rowIndex: number,
+  ) => {
+    const row = TIMETABLE_ROWS[rowIndex];
+    if (!row) return;
+
+    const occupiedByCourse =
+      row.periodIndex !== null &&
+      schedule.some(
+        (item) =>
+          item.day === day && item.period === row.periodIndex,
+      );
+
+    const occupiedByEvent = events.some(
+      (item) =>
+        item.id !== id &&
+        item.day === day &&
+        item.rowIndex === rowIndex,
+    );
+
+    if (occupiedByCourse || occupiedByEvent) {
+      notify("移動先のマスが埋まっています");
+      return;
+    }
+
+    setEvents((current) =>
+      current.map((item) =>
+        item.id === id ? { ...item, day, rowIndex } : item,
+      ),
+    );
+
+    notify("予定を移動しました");
+  };
+
+  const removeEvent = (id: string) => {
+    setEvents((current) =>
+      current.filter((item) => item.id !== id),
+    );
+    notify("配置した予定を削除しました");
+  };
+
+  const removeCustomBlock = (blockId: string) => {
+    const block = customBlocks.find((item) => item.id === blockId);
+    if (!block) return;
+
+    if (
+      !window.confirm(
+        `「${block.title}」と、その時間割上の配置をすべて削除しますか？`,
+      )
+    ) {
+      return;
+    }
+
+    setCustomBlocks((current) =>
+      current.filter((item) => item.id !== blockId),
+    );
+
+    setEvents((current) =>
+      current.filter((item) => item.blockId !== blockId),
+    );
+
+    setPendingCustomBlockId((current) =>
+      current === blockId ? null : current,
+    );
+
+    notify(`「${block.title}」を削除しました`);
+  };
 
   useEffect(() => {
     if (!ready) return;
@@ -228,9 +466,11 @@ export default function TimetableApp({
     event.preventDefault();
 
     if (dragging?.id) {
-      removeCourse(dragging.id);
-    } else {
-      notify("削除するには、時間割上の科目を移動してください");
+      if (dragging.kind === "event") {
+        removeEvent(dragging.id);
+      } else {
+        removeCourse(dragging.id);
+      }
     }
 
     setDragging(null);
@@ -239,8 +479,11 @@ export default function TimetableApp({
 
   const clearSchedule = () => {
     if (!window.confirm("時間割をすべて削除しますか？")) return;
+
     setSchedule([]);
+    setEvents([]);
     setPendingCode(null);
+    setPendingCustomBlockId(null);
     notify("時間割をリセットしました");
   };
 
@@ -251,18 +494,32 @@ export default function TimetableApp({
   const onDrop = (
     event: DragEvent<HTMLDivElement>,
     day: number,
-    period: number,
+    rowIndex: number,
   ) => {
     event.preventDefault();
 
-    // ドラッグ状態を優先。dataTransfer はブラウザごとの差異があるため、
-    // React の state と併用して科目追加・移動を処理する。
     if (!dragging) return;
 
-    if (dragging.id) {
-      moveCourse(dragging.id, day, period);
+    if (dragging.kind === "event" && dragging.id) {
+      moveEvent(dragging.id, day, rowIndex);
+    } else if (dragging.kind === "custom" && dragging.blockId) {
+      addEvent(dragging.blockId, day, rowIndex);
+    } else if (dragging.id) {
+      const periodIndex = TIMETABLE_ROWS[rowIndex]?.periodIndex;
+
+      if (periodIndex !== null && periodIndex !== undefined) {
+        moveCourse(dragging.id, day, periodIndex);
+      } else {
+        notify("授業は昼休みに移動できません");
+      }
     } else {
-      placeCourse(dragging.code, day, period);
+      const periodIndex = TIMETABLE_ROWS[rowIndex]?.periodIndex;
+
+      if (periodIndex !== null && periodIndex !== undefined) {
+        placeCourse(dragging.code, day, periodIndex);
+      } else {
+        notify("昼休みには授業を配置できません");
+      }
     }
 
     setDragging(null);
@@ -327,9 +584,11 @@ export default function TimetableApp({
                   <div>
                     <strong>マイ時間割</strong>
                     <div className="small-muted">
-                      月曜日 — 土曜日 ／ 1〜5限
+                      月曜日 — 土曜日
                     </div>
                   </div>
+
+
                   <div className="schedule-actions">
                     <div
                       className={`trash-dropzone${trashActive ? " active" : ""}`}
@@ -352,7 +611,10 @@ export default function TimetableApp({
                       aria-label="科目の削除エリア"
                     >
                       <span aria-hidden="true">🗑</span>
-                      <span>ここにドロップして削除</span>
+                      <span className="trash-label">
+                        <span className="desktop-trash-label">削除エリア</span>
+                        <span className="mobile-trash-label">削除</span>
+                      </span>
                     </div>
 
                     <button
@@ -373,39 +635,57 @@ export default function TimetableApp({
                       </div>
                     ))}
 
-                    {PERIODS.map((period, periodIndex) => (
-                      <div className="timetable-row" key={period}>
-                        <div className="period">{period}</div>
+                    {TIMETABLE_ROWS.map((row, rowIndex) => (
+                      <div className="timetable-row" key={row.label}>
+                        <div className="period">
+                          {row.label}
+                          <small>
+                            {row.start}
+                            <br />
+                            {row.end}
+                          </small>
+                        </div>
 
                         {DAYS.map((day, dayIndex) => {
-                          const item = schedule.find(
+                          const item =
+                            row.periodIndex === null
+                              ? undefined
+                              : schedule.find(
+                                  (entry) =>
+                                    entry.day === dayIndex &&
+                                    entry.period === row.periodIndex,
+                                );
+
+                          const course = item
+                            ? courses.find((entry) => entry.code === item.code)
+                            : undefined;
+
+                          const plannedEvent = events.find(
                             (entry) =>
                               entry.day === dayIndex &&
-                              entry.period === periodIndex,
+                              entry.rowIndex === rowIndex,
                           );
-                          const course = item
-                            ? courses.find(
-                                (entry) => entry.code === item.code,
-                              )
+                          const plannedBlock = plannedEvent
+                            ? customBlocks.find((block) => block.id === plannedEvent.blockId)
                             : undefined;
 
                           return (
                             <div
                               className={`slot${dragging ? " slot-ready" : ""}`}
-                              key={`${day}-${period}`}
+                              key={`${day}-${row.label}`}
                               onDragOver={(event) =>
                                 event.preventDefault()
                               }
-                              onDrop={(event) =>
-                                onDrop(event, dayIndex, periodIndex)
-                              }
+                              onDrop={(event) => onDrop(event, dayIndex, rowIndex)}
                               onClick={() => {
-                                if (pendingCode) {
-                                  placeCourse(
-                                    pendingCode,
-                                    dayIndex,
-                                    periodIndex,
-                                  );
+                                if (pendingCustomBlockId) {
+                                  addEvent(pendingCustomBlockId, dayIndex, rowIndex);
+                                } else if (pendingCode) {
+                                  if (row.periodIndex === null) {
+                                    notify("昼休みには授業ではなく予定を配置してください");
+                                  } else {
+                                    placeCourse(pendingCode, dayIndex, row.periodIndex);
+                                  }
                                 }
                               }}
                             >
@@ -418,27 +698,47 @@ export default function TimetableApp({
                                     color: course.textColor,
                                   }}
                                   onDragStart={(event) => {
-                                    event.dataTransfer.effectAllowed =
-                                      "move";
-                                    event.dataTransfer.setData(
-                                      "text/plain",
-                                      item.id,
-                                    );
+                                    event.dataTransfer.effectAllowed = "move";
+                                    event.dataTransfer.setData("text/plain", item.id);
                                     setDragging({
                                       code: item.code,
                                       id: item.id,
                                     });
                                   }}
                                   onDragEnd={() => setDragging(null)}
-                                  onClick={(event) =>
-                                    event.stopPropagation()
-                                  }
+                                  onClick={(event) => event.stopPropagation()}
                                 >
                                   <strong>{course.name}</strong>
                                   <small>
-                                    {DAYS[item.day]}曜日 ·{" "}
-                                    {PERIODS[item.period]}
+                                    {DAYS[item.day]}曜日 · {PERIODS[item.period]}
                                   </small>
+                                </div>
+                              ) : plannedEvent && plannedBlock ? (
+                                <div
+                                  className="course-block event-block"
+                                  draggable
+                                  style={{
+                                    background: plannedBlock.color,
+                                    color: "#ffffff",
+                                  }}
+                                  onDragStart={(event) => {
+                                    event.dataTransfer.effectAllowed = "move";
+                                    event.dataTransfer.setData("text/plain", plannedEvent.id);
+                                    setDragging({
+                                      code: "",
+                                      id: plannedEvent.id,
+                                      kind: "event",
+                                    });
+                                  }}
+                                  onDragEnd={() => setDragging(null)}
+                                  onClick={(event) => event.stopPropagation()}
+                                >
+                                  <strong>{plannedBlock.title}</strong>
+                                  {plannedBlock.memo ? (
+                                    <small className="event-memo">{plannedBlock.memo}</small>
+                                  ) : (
+                                    <small>予定</small>
+                                  )}
                                 </div>
                               ) : null}
                             </div>
@@ -451,9 +751,9 @@ export default function TimetableApp({
               </section>
 
               <aside className="panel side">
-                <h2>科目ブロック</h2>
+                <h2>科目・予定ブロック</h2>
                 <span className="small-muted">
-                  下からドラッグ、またはクリックして配置
+                  ドラッグ、または選択して配置先をクリック
                 </span>
 
                 <div className="course-list">
@@ -466,15 +766,15 @@ export default function TimetableApp({
                       draggable
                       onDragStart={(event) => {
                         event.dataTransfer.effectAllowed = "copy";
-                        event.dataTransfer.setData(
-                          "text/plain",
-                          course.code,
-                        );
+                        event.dataTransfer.setData("text/plain", course.code);
+                        setPendingCode(null);
+                        setPendingCustomBlockId(null);
                         setDragging({ code: course.code });
                       }}
                       onDragEnd={() => setDragging(null)}
                       onClick={() => {
                         setPendingCode(course.code);
+                        setPendingCustomBlockId(null);
                         notify(
                           `${course.name}：配置先の曜日・時限をクリックしてください`,
                         );
@@ -487,17 +787,148 @@ export default function TimetableApp({
                       <span>
                         <strong>{course.name}</strong>
                         <small>
-                          {course.rating.toFixed(1)} ★ ·{" "}
-                          {course.reviews.length}件
+                          {course.rating.toFixed(1)} ★ · {course.reviews.length}件
                         </small>
                       </span>
                     </button>
                   ))}
                 </div>
 
+                <div className="custom-event-section">
+                  <div className="custom-event-heading">
+                    <h3>自分の予定</h3>
+                    <button
+                      type="button"
+                      className="action secondary"
+                      onClick={() => setShowEventForm((current) => !current)}
+                    >
+                      {showEventForm ? "閉じる" : "＋ 予定を追加"}
+                    </button>
+                  </div>
+
+                  {showEventForm && (
+                    <div className="custom-event-form">
+                      <label>
+                        予定名
+                        <input
+                          type="text"
+                          value={eventTitle}
+                          maxLength={60}
+                          placeholder="例：サークル、アルバイト"
+                          onChange={(event) => setEventTitle(event.target.value)}
+                        />
+                      </label>
+
+                      <label>
+                        メモ（任意）
+                        <textarea
+                          value={eventMemo}
+                          maxLength={200}
+                          rows={3}
+                          placeholder="場所、持ち物、簡単なメモなど"
+                          onChange={(event) => setEventMemo(event.target.value)}
+                        />
+                      </label>
+
+                      <label>
+                        ブロックの色
+                        <input
+                          className="custom-event-color"
+                          type="color"
+                          value={eventColor}
+                          onChange={(event) => setEventColor(event.target.value)}
+                        />
+                      </label>
+
+                      <button
+                        type="button"
+                        className="action primary"
+                        onClick={addCustomBlock}
+                      >
+                        予定を登録
+                      </button>
+                    </div>
+                  )}
+
+                  {customBlocks.length === 0 ? (
+                    <p className="small-muted custom-event-empty">
+                      サークルやバイトなど、自分の予定を登録できます。
+                    </p>
+                  ) : (
+                    <div className="course-list custom-event-list">
+                      {customBlocks.map((block) => (
+                        <div
+                          key={block.id}
+                          className={`course-choice custom-event-choice${
+                            pendingCustomBlockId === block.id ? " selected" : ""
+                          }`}
+                          draggable
+                          role="button"
+                          tabIndex={0}
+                          onDragStart={(event) => {
+                            event.dataTransfer.effectAllowed = "copy";
+                            event.dataTransfer.setData("text/plain", block.id);
+                            setPendingCode(null);
+                            setPendingCustomBlockId(null);
+                            setDragging({
+                              code: "",
+                              kind: "custom",
+                              blockId: block.id,
+                            });
+                          }}
+                          onDragEnd={() => setDragging(null)}
+                          onClick={() => {
+                            setPendingCode(null);
+                            setPendingCustomBlockId(block.id);
+                            notify(
+                              `${block.title}：配置先の曜日・時限をクリックしてください`,
+                            );
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              setPendingCode(null);
+                              setPendingCustomBlockId(block.id);
+                              notify(
+                                `${block.title}：配置先の曜日・時限をクリックしてください`,
+                              );
+                            }
+                          }}
+                        >
+                          <span
+                            className="swatch"
+                            style={{ background: block.color }}
+                          />
+
+                          <span className="custom-event-text">
+                            <strong>{block.title}</strong>
+                            <small>{block.memo || "メモなし"}</small>
+                          </span>
+
+                          <button
+                            type="button"
+                            className="custom-event-delete"
+                            aria-label={`${block.title}の定義を削除`}
+                            title="予定の定義を削除"
+                            draggable={false}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              removeCustomBlock(block.id);
+                            }}
+                            onDragStart={(event) => event.preventDefault()}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <div className="hint">
                   ✦ ブロックは曜日・時限のマスにスナップします。
                   配置後もドラッグして移動できます。
+                  昼休みには自作予定を配置できます。
                 </div>
               </aside>
             </div>
