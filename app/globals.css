@@ -625,9 +625,7 @@ body {
     padding: 8px;
   }
 
-  .root .timetable {
-    min-width: 580px;
-  }
+
 
   .root .day,
   .root .period {
@@ -650,9 +648,41 @@ body {
 
 /* 小型スマートフォン */
 @media (max-width: 480px) {
-  .root {
-    padding: 8px;
+  .root .grid-wrap {
+    width: 100%;
+    min-width: 0;
+    padding: 4px;
+    overflow-x: hidden;
   }
+
+  .root .timetable {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: 32px repeat(5, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .root .day,
+  .root .period {
+    min-width: 0;
+    padding: 4px 1px;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+  }
+
+  .root .slot {
+    min-width: 0;
+    padding: 2px;
+  }
+
+  .root .course-block {
+    min-width: 0;
+    padding: 3px 2px;
+    font-size: 9px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
 
   .root .panel {
     padding: 10px;
