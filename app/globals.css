@@ -891,7 +891,7 @@ body {
   border: 1px solid var(--border, #d1d5db);
   border-radius: 8px;
   background: var(--panel-bg, #ffffff);
-  color: inherit;
+  color: #000000;
   font: inherit;
 }
 
