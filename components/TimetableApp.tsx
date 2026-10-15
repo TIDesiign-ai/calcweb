@@ -583,7 +583,7 @@ export default function TimetableApp({
               <section className="panel">
                 <div className="schedule-tools">
                   <div>
-                    <strong>マイ時間割</strong>
+                    <strong>マ イ 時 間 割</strong>
                     <div className="small-muted">
                       月曜日 — 土曜日
                     </div>
