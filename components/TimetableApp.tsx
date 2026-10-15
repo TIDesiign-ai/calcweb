@@ -76,6 +76,7 @@ export default function TimetableApp({
     code: string;
     id?: string;
   } | null>(null);
+  const [trashActive, setTrashActive] = useState(false);
 
   const totalReviews = useMemo(
     () =>
@@ -221,6 +222,21 @@ export default function TimetableApp({
     notify("科目を削除しました");
   };
 
+  const onTrashDrop = (
+    event: DragEvent<HTMLDivElement>,
+  ) => {
+    event.preventDefault();
+
+    if (dragging?.id) {
+      removeCourse(dragging.id);
+    } else {
+      notify("削除するには、時間割上の科目を移動してください");
+    }
+
+    setDragging(null);
+    setTrashActive(false);
+  };
+
   const clearSchedule = () => {
     if (!window.confirm("時間割をすべて削除しますか？")) return;
     setSchedule([]);
@@ -307,13 +323,31 @@ export default function TimetableApp({
             />
             <div className="workspace">
               <section className="panel">
-                <div className="schedule-tools">
-                  <div>
-                    <strong>マイ時間割</strong>
-                    <div className="small-muted">
-                      月曜日 — 土曜日 ／ 1〜5限
-                    </div>
+                <div className="schedule-actions">
+                  <div
+                    className={`trash-dropzone${trashActive ? " active" : ""}`}
+                    onDragOver={(event) => {
+                      event.preventDefault();
+                      event.dataTransfer.dropEffect = "move";
+                    }}
+                    onDragEnter={() => setTrashActive(true)}
+                    onDragLeave={(event) => {
+                      if (
+                        !event.currentTarget.contains(
+                          event.relatedTarget as Node | null,
+                        )
+                      ) {
+                        setTrashActive(false);
+                      }
+                    }}
+                    onDrop={onTrashDrop}
+                    role="region"
+                    aria-label="科目の削除エリア"
+                  >
+                    <span aria-hidden="true">🗑</span>
+                    <span>ここにドロップして削除</span>
                   </div>
+
                   <button
                     className="action secondary"
                     onClick={clearSchedule}
@@ -397,26 +431,6 @@ export default function TimetableApp({
                                     {DAYS[item.day]}曜日 ·{" "}
                                     {PERIODS[item.period]}
                                   </small>
-                                  <div className="block-actions">
-                                    <Link
-                                      className="mini"
-                                      href={`/courses/${course.code}`}
-                                      onClick={(event) =>
-                                        event.stopPropagation()
-                                      }
-                                    >
-                                      口コミ
-                                    </Link>
-                                    <button
-                                      className="mini"
-                                      aria-label={`${course.name}を削除`}
-                                      onClick={() =>
-                                        removeCourse(item.id)
-                                      }
-                                    >
-                                      ×
-                                    </button>
-                                  </div>
                                 </div>
                               ) : null}
                             </div>
