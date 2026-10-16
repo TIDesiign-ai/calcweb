@@ -650,30 +650,28 @@ export default function TimetableApp({
 
   return (
     <div className="root" data-grade={selectedGrade}>
-      <header className="topbar">
-        <Link href="/" className="brand" aria-label="履修ナビ トップ">
-          <span className="logo">履</span>
-          <span>履修ナビ</span>
-        </Link>
+    <header className="topbar">
+      <Link href="/" className="brand" aria-label="履修ナビ トップ">
+        <span className="logo">履</span>
+        <span>履修ナビ</span>
+      </Link>
 
-        <nav className="nav" aria-label="メインメニュー">
-          <button
-            className={page === "timetable" ? "active" : ""}
-            onClick={() => setPage("timetable")}
-            data-tour="timetable"
-          >
-            時間割ツール
-          </button>
-          <button
-            className={page === "courses" ? "active" : ""}
-            onClick={() => setPage("courses")}
-            data-tour="reviews"
-          >
-            履修口コミ
-          </button>
-        </nav>
+      <nav className="nav" aria-label="メインメニュー">
+        <button
+          className={page === "timetable" ? "active" : ""}
+          onClick={() => setPage("timetable")}
+        >
+          時間割ツール
+        </button>
+        <button
+          className={page === "courses" ? "active" : ""}
+          onClick={() => setPage("courses")}
+        >
+          履修口コミ
+        </button>
+      </nav>
 
-
+      <div className="header-actions">
         <button
           type="button"
           className="tutorial-launch-btn"
@@ -690,7 +688,8 @@ export default function TimetableApp({
         <button className="theme-btn" onClick={changeTheme}>
           {themeLabel}
         </button>
-      </header>
+      </div>
+    </header>
 
       <main className="main">
         {page === "timetable" ? (
