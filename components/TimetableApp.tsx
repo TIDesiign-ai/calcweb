@@ -572,7 +572,7 @@ export default function TimetableApp({
       if (periodIndex !== null && periodIndex !== undefined) {
         moveCourse(dragging.id, day, periodIndex);
       } else {
-        notify("授業は昼休みに移動できません");
+        notify("授業は休み時間に移動できません");
       }
     } else {
       const periodIndex = TIMETABLE_ROWS[rowIndex]?.periodIndex;
@@ -580,7 +580,7 @@ export default function TimetableApp({
       if (periodIndex !== null && periodIndex !== undefined) {
         placeCourse(dragging.code, day, periodIndex);
       } else {
-        notify("昼休みには授業を配置できません");
+        notify("休み時間には授業を配置できません");
       }
     }
 
@@ -742,7 +742,7 @@ export default function TimetableApp({
                                   addEvent(pendingCustomBlockId, dayIndex, rowIndex);
                                 } else if (pendingCode) {
                                   if (row.periodIndex === null) {
-                                    notify("昼休みには授業ではなく予定を配置してください");
+                                    notify("休み時間には授業ではなく予定を配置してください");
                                   } else {
                                     placeCourse(pendingCode, dayIndex, row.periodIndex);
                                   }
@@ -1020,9 +1020,17 @@ export default function TimetableApp({
 
             <h2 className="section-title">口コミを見ながら選ぶ</h2>
             <div className="course-catalog">
-              {courses.slice(0, 3).map((course) => (
-                <ReviewCard key={course.code} code={course.code} />
-              ))}
+              {selectableCourses
+                .map((course) =>
+                  reviewCourses.find(
+                    (review) => review.name === course.course_name,
+                  ),
+                )
+                .filter((course) => course !== undefined)
+                .slice(0, 3)
+                .map((course) => (
+                  <ReviewCard key={course.code} code={course.code} />
+                ))}
             </div>
           </section>
         ) : (
