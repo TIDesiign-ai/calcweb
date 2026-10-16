@@ -806,6 +806,14 @@ export default function TimetableApp({
                                     background: course.color,
                                     color: course.textColor,
                                   }}
+
+                                  onContextMenu={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+
+                                    removeCourse(item.id);
+                                  }}
+
                                   onDragStart={(event) => {
                                     event.dataTransfer.effectAllowed = "move";
                                     event.dataTransfer.setData("text/plain", item.id);
@@ -821,6 +829,7 @@ export default function TimetableApp({
                                   <small>
                                     {DAYS[item.day]}曜日 · {PERIODS[item.period]}
                                   </small>
+
                                 </div>
                               ) : plannedEvent && plannedBlock ? (
                                 <div
@@ -830,6 +839,21 @@ export default function TimetableApp({
                                     background: plannedBlock.color,
                                     color: "#ffffff",
                                   }}
+
+
+                                  onContextMenu={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+
+                                    if (
+                                      window.confirm(
+                                        `「${plannedBlock.title}」を削除しますか？`,
+                                      )
+                                    ) {
+                                      removeEvent(plannedEvent.id);
+                                    }
+                                  }}
+
                                   onDragStart={(event) => {
                                     event.dataTransfer.effectAllowed = "move";
                                     event.dataTransfer.setData("text/plain", plannedEvent.id);
