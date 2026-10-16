@@ -172,6 +172,19 @@ export default function TimetableApp({
     [selectedGrade, selectedSemester],
   );
 
+  const visibleReviewCourses = selectableCourses
+    .map((course) =>
+      reviewCourses.find(
+        (review) => review.name === course.course_name,
+      ),
+    )
+    .filter((course) => course !== undefined);
+
+  const visibleReviewCount = visibleReviewCourses.reduce(
+    (total, course) => total + course.reviews.length,
+    0,
+  );
+
   const [events, setEvents] = useState<ScheduleEvent[]>([]);
   const [customBlocks, setCustomBlocks] = useState<CustomBlock[]>([]);
   const [pendingCustomBlockId, setPendingCustomBlockId] =
@@ -1044,24 +1057,17 @@ export default function TimetableApp({
                 </p>
               </div>
               <span className="pill">
-                {courses.length}科目 · {totalReviews}件の口コミ
+                {visibleReviewCourses.length}科目 · {visibleReviewCount}件の口コミ
               </span>
             </div>
 
             <div className="course-catalog">
-              {selectableCourses
-                .map((course) =>
-                  reviewCourses.find(
-                    (review) => review.name === course.course_name,
-                  ),
-                )
-                .filter((course) => course !== undefined)
-                .map((course) => (
-                  <ReviewCard
-                    key={course.code}
-                    code={course.code}
-                  />
-                ))}
+              {visibleReviewCourses.map((course) => (
+                <ReviewCard
+                  key={course.code}
+                  code={course.code}
+                />
+              ))}
             </div>
           </section>
         )}
