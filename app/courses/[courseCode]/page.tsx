@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { courses, getCourseByCode } from "../../../data/lib/reviews";
+import {
+  courses,
+  getCourseByCode,
+  getCourseByName,
+} from "../../../data/lib/reviews";
 
 export function generateStaticParams() {
-  return courses.map((course) => ({
-    courseCode: course.code,
-  }));
+  return courses.flatMap((course) => [
+    { courseCode: course.code },
+    { courseCode: course.name },
+  ]);
 }
 
 export default async function CourseDetailPage({
@@ -14,7 +19,12 @@ export default async function CourseDetailPage({
   params: Promise<{ courseCode: string }>;
 }) {
   const { courseCode } = await params;
-  const course = getCourseByCode(courseCode);
+
+  const decodedCourseCode = decodeURIComponent(courseCode);
+
+  const course =
+    getCourseByCode(decodedCourseCode) ??
+    getCourseByName(decodedCourseCode);
 
   if (!course) notFound();
 

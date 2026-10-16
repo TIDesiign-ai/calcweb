@@ -16,10 +16,10 @@ export const courses = Object.entries(rawReviews).map(
   },
 );
 
-export function getCourseByName(name: string) {
-  return courses.find((course) => course.name === name);
-}
-
 export function getCourseByCode(code: string) {
   return courses.find((course) => course.code === code);
+}
+
+export function getCourseByName(name: string) {
+  return courses.find((course) => course.name === name);
 }
