@@ -1223,3 +1223,21 @@ body {
     font-size: 12px;
   }
 }
+.schedule-cta-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.schedule-cta-button-secondary {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 4px 0 #d1d5db;
+}
+
+.schedule-cta-button-secondary:hover {
+  background: #f9fafb;
+}

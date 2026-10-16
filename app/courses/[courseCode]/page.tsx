@@ -73,10 +73,20 @@ export default async function CourseDetailPage({
             次は、自分だけの時間割を作ろう！
           </p>
 
-          <Link className="schedule-cta-button" href="/#timetable">
-            <span>時間割を作る！</span>
-            <span aria-hidden="true">→</span>
-          </Link>
+          <div className="schedule-cta-actions">
+            <Link className="schedule-cta-button" href="/#timetable">
+              <span>時間割を作る！</span>
+              <span aria-hidden="true">→</span>
+            </Link>
+
+            <a
+              className="schedule-cta-button schedule-cta-button-secondary"
+              href="https://aaaportal.tid.ac.jp/aa_web/portal/mt0010.aspx"
+            >
+              <span>AAAへアクセスする！</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+          </div>
         </div>
       </section>
     </main>
