@@ -77,3 +77,38 @@
   outline: 3px solid var(--grade-border);
   outline-offset: 3px;
 }
+.controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.selector {
+  margin-bottom: 0;
+}
+
+.semesterSelector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.semesterOption {
+  padding: 10px 14px;
+  border: 1px solid #555;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.semesterSelected {
+  background: #444;
+  border-color: #444;
+  color: white;
+}

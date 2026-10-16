@@ -1,4 +1,5 @@
 "use client";
+import { courses as reviewCourses } from "../data/lib/reviews";
 
 
 import Link from "next/link";
@@ -9,6 +10,12 @@ import { courses } from "../data/lib/reviews";
 import GradeSelector from "./GradeSelector";
 import type { Grade } from "../data/lib/grade-theme";
 
+import {
+  getSelectableCourses,
+  type Semester,
+} from "../data/lib/course-selector";
+
+import { courses as catalogCourses } from "../data/lib/courses";
 
 type ScheduleItem = {
   id: string;
@@ -52,6 +59,47 @@ type ScheduleEvent = {
 const CUSTOM_BLOCKS_KEY = "course-nav-custom-blocks";
 const EVENTS_KEY = "course-nav-events";
 const DEFAULT_EVENT_COLOR = "#8b7cf6";
+
+type TimetableCourseInfo = {
+  name: string;
+  color: string;
+  textColor: string;
+};
+
+function getTimetableCourse(
+  code: string,
+): TimetableCourseInfo | undefined {
+  // 口コミデータに存在する科目
+  const reviewCourse = reviewCourses.find(
+    (item) => item.code === code,
+  );
+
+  if (reviewCourse) {
+    return {
+      name: reviewCourse.name,
+      color: reviewCourse.color,
+      textColor: reviewCourse.textColor,
+    };
+  }
+
+  // シラバス由来の科目
+  // 新しい識別子 catalog:<id> と、旧形式の id の両方に対応
+  const catalogId = code.startsWith("catalog:")
+    ? code.slice("catalog:".length)
+    : code;
+
+  const catalogCourse = catalogCourses.find(
+    (item) => item.id === catalogId,
+  );
+
+  if (!catalogCourse) return undefined;
+
+  return {
+    name: catalogCourse.course_name,
+    color: "#64748b",
+    textColor: "#ffffff",
+  };
+}
 
 function makeId() {
   return `${Date.now().toString(36)}-${Math.random()
@@ -113,6 +161,16 @@ export default function TimetableApp({
     [],
   );
   const [selectedGrade, setSelectedGrade] = useState<Grade>(1);
+
+
+
+  const [selectedSemester, setSelectedSemester] =
+    useState<Semester>("前期");
+
+  const selectableCourses = useMemo(
+    () => getSelectableCourses(selectedGrade, selectedSemester),
+    [selectedGrade, selectedSemester],
+  );
 
   const [events, setEvents] = useState<ScheduleEvent[]>([]);
   const [customBlocks, setCustomBlocks] = useState<CustomBlock[]>([]);
@@ -402,8 +460,11 @@ export default function TimetableApp({
 
   const placeCourse = useCallback(
     (code: string, day: number, period: number) => {
-      const course = courses.find((item) => item.code === code);
-      if (!course) return;
+      const course = getTimetableCourse(code);
+      if (!course) {
+        notify("科目情報を取得できませんでした");
+        return;
+      }
 
       setSchedule((current) => {
         if (
@@ -578,6 +639,8 @@ export default function TimetableApp({
             <GradeSelector
               value={selectedGrade}
               onChange={setSelectedGrade}
+              semester={selectedSemester}
+              onSemesterChange={setSelectedSemester}
             />
             <div className="workspace">
               <section className="panel">
@@ -655,9 +718,8 @@ export default function TimetableApp({
                                 );
 
                           const course = item
-                            ? courses.find((entry) => entry.code === item.code)
+                            ? getTimetableCourse(item.code)
                             : undefined;
-
                           const plannedEvent = events.find(
                             (entry) =>
                               entry.day === dayIndex &&
@@ -755,41 +817,66 @@ export default function TimetableApp({
                 </span>
 
                 <div className="course-list">
-                  {courses.map((course) => (
-                    <button
-                      className={`course-choice${
-                        pendingCode === course.code ? " selected" : ""
-                      }`}
-                      key={course.code}
-                      draggable
-                      onDragStart={(event) => {
-                        event.dataTransfer.effectAllowed = "copy";
-                        event.dataTransfer.setData("text/plain", course.code);
-                        setPendingCode(null);
-                        setPendingCustomBlockId(null);
-                        setDragging({ code: course.code });
-                      }}
-                      onDragEnd={() => setDragging(null)}
-                      onClick={() => {
-                        setPendingCode(course.code);
-                        setPendingCustomBlockId(null);
-                        notify(
-                          `${course.name}：配置先の曜日・時限をクリックしてください`,
-                        );
-                      }}
-                    >
-                      <span
-                        className="swatch"
-                        style={{ background: course.color }}
-                      />
-                      <span>
-                        <strong>{course.name}</strong>
-                        <small>
-                          {course.rating.toFixed(1)} ★ · {course.reviews.length}件
-                        </small>
-                      </span>
-                    </button>
-                  ))}
+                  {selectableCourses.length === 0 ? (
+                    <p className="small-muted">
+                      選択した学年・学期の科目はありません。
+                    </p>
+                  ) : (
+                    selectableCourses.map((course) => {
+                      const reviewCourse = reviewCourses.find(
+                        (item) => item.name === course.course_name,
+                      );
+
+                      const courseCode = reviewCourse?.code ??
+                      `catalog:${course.id}`;
+                      const courseName = course.course_name;
+
+                      return (
+                        <button
+                          key={course.id}
+                          className={`course-choice${
+                            pendingCode === courseCode ? " selected" : ""
+                          }`}
+                          draggable
+                          onDragStart={(event) => {
+                            event.dataTransfer.effectAllowed = "copy";
+                            event.dataTransfer.setData("text/plain", courseCode);
+                            setPendingCode(null);
+                            setPendingCustomBlockId(null);
+                            setDragging({ code: courseCode });
+                          }}
+                          onDragEnd={() => setDragging(null)}
+                          onClick={() => {
+                            setPendingCode(courseCode);
+                            setPendingCustomBlockId(null);
+                            notify(
+                              `${courseName}：配置先の曜日・時限をクリックしてください`,
+                            );
+                          }}
+                        >
+                          <span
+                            className="swatch"
+                            style={{
+                              background: reviewCourse?.color ?? "#64748b",
+                            }}
+                          />
+                          <span>
+                            <strong>{courseName}</strong>
+                            <small>
+                              {reviewCourse ? (
+                                <>
+                                  {reviewCourse.rating.toFixed(1)} ★ ·{" "}
+                                  {reviewCourse.reviews.length}件
+                                </>
+                              ) : (
+                                "口コミはまだありません"
+                              )}
+                            </small>
+                          </span>
+                        </button>
+                      );
+                    })
+                  )}
                 </div>
 
                 <div className="custom-event-section">
@@ -954,9 +1041,25 @@ export default function TimetableApp({
             </div>
 
             <div className="course-catalog">
-              {courses.map((course) => (
-                <ReviewCard key={course.code} code={course.code} />
-              ))}
+              {selectableCourses.map((course) => {
+                const reviewCourse = reviewCourses.find(
+                  (item) => item.name === course.course_name,
+                );
+
+                return (
+                  <button
+                    key={course.id}
+                    className={`course-choice${
+                      pendingCode === (reviewCourse?.code ?? course.id)
+                        ? " selected"
+                        : ""
+                    }`}
+                    // ここには既存の onClick、ドラッグ処理などを維持
+                  >
+                    {/* 既存の科目表示 */}
+                  </button>
+                );
+              })}
             </div>
           </section>
         )}

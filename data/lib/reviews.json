@@ -1,12 +1,12 @@
 {
-  "プログラミング応用B": {
+  "プログラミング応用": {
     "rating": 4.2,
     "reviews": [
       {"author": "3年生", "comment": "課題は多めですが、説明は分かりやすいです。"},
       {"author": "2年生", "comment": "あああああああああ。"}
     ]
   },
-  "Linux演習A": {
+  "Linux演習": {
     "rating": 4.5,
     "reviews": [
       {"author": "先輩", "comment": "Linuxを実際に触るので、環境構築に慣れておくと楽です。"}

@@ -238,6 +238,7 @@ a { color: inherit; text-decoration: none; }
 .course-list { display: flex; flex-direction: column; gap: 8px; }
 .course-choice {
   width: 100%;
+  min-width: 0;
   text-align: left;
   background: var(--surface2);
   border: 1px solid var(--line);
@@ -245,10 +246,24 @@ a { color: inherit; text-decoration: none; }
   padding: 10px;
   display: flex;
   gap: 9px;
-  align-items: flex-start;
+  align-items: center;
   color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
 }
-.course-choice:hover, .course-choice.selected { border-color: var(--accent); }
+
+.course-choice:hover,
+.course-choice.selected {
+  border-color: var(--accent);
+}
+
+.course-choice > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 .swatch {
   width: 9px;
   min-height: 34px;
