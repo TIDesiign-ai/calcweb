@@ -1024,3 +1024,202 @@ body {
     max-width: 320px;
   }
 }
+
+/* チュートリアル呼び出しボタン */
+.tutorial-launch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border: 1px solid #ff4d8d;
+  border-radius: 999px;
+  background: #fff0f6;
+  color: #d9266b;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.tutorial-launch-btn:hover {
+  background: #ffe0ec;
+  transform: translateY(-1px);
+}
+
+/* チュートリアル全体 */
+.tutorial-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.tutorial-spotlight {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* 説明カード */
+.tutorial-card {
+  position: fixed;
+  left: 50%;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(480px, calc(100vw - 32px));
+  box-sizing: border-box;
+  padding: 22px;
+  border: 1px solid #f3d5e1;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #27212a;
+  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.28);
+  pointer-events: auto;
+}
+
+.tutorial-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tutorial-label {
+  color: #d9266b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.tutorial-counter {
+  color: #77717b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tutorial-progress {
+  display: flex;
+  gap: 5px;
+  margin: 14px 0 20px;
+}
+
+.tutorial-progress-item {
+  flex: 1;
+  height: 4px;
+  border-radius: 99px;
+  background: #ece8ed;
+}
+
+.tutorial-progress-item.active {
+  background: #ff4d8d;
+}
+
+.tutorial-card h2 {
+  margin: 0 0 10px;
+  font-size: 21px;
+  line-height: 1.5;
+}
+
+.tutorial-card p {
+  margin: 0;
+  color: #625b66;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.tutorial-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.tutorial-navigation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tutorial-skip,
+.tutorial-back,
+.tutorial-next {
+  min-height: 40px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tutorial-skip {
+  border: none;
+  background: transparent;
+  color: #77717b;
+}
+
+.tutorial-back {
+  border: 1px solid #e4dfe6;
+  background: #ffffff;
+  color: #514956;
+}
+
+.tutorial-next {
+  border: none;
+  background: #ff4d8d;
+  color: #ffffff;
+  box-shadow: 0 4px 0 #d92f70;
+}
+
+.tutorial-next:hover {
+  background: #f43e80;
+}
+
+.tutorial-skip:focus-visible,
+.tutorial-back:focus-visible,
+.tutorial-next:focus-visible,
+.tutorial-launch-btn:focus-visible {
+  outline: 3px solid #ff4d8d;
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .tutorial-card {
+    bottom: max(12px, env(safe-area-inset-bottom));
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .tutorial-card h2 {
+    font-size: 19px;
+  }
+
+  .tutorial-card p {
+    font-size: 13px;
+  }
+
+  .tutorial-actions {
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .tutorial-skip {
+    padding: 9px 4px;
+    font-size: 11px;
+  }
+
+  .tutorial-back,
+  .tutorial-next {
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+
+  .tutorial-launch-btn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}

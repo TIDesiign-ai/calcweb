@@ -1,5 +1,5 @@
 "use client";
-
+const TUTORIAL_KEY = "timetable-tutorial-completed";
 import { gradeThemes, type Grade } from "../data/lib/grade-theme";
 import styles from "./GradeSelector.module.css";
 import type { Semester } from "../data/lib/course-selector";
@@ -26,6 +26,7 @@ export default function GradeSelector({
 
           return (
             <button
+              data-tour="grade-selector"
               key={grade}
               type="button"
               className={`${styles.option} ${
@@ -49,6 +50,7 @@ export default function GradeSelector({
       <div className={styles.semesterSelector} aria-label="学期選択">
         {(["前期", "後期"] as const).map((item) => (
           <button
+            data-tour="semester-selector"
             key={item}
             type="button"
             className={`${styles.semesterOption} ${

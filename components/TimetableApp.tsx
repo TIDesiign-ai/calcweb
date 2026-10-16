@@ -17,6 +17,9 @@ import {
 
 import { courses as catalogCourses } from "../data/lib/courses";
 
+import TimetableTutorial from "./TimetableTutorial";
+
+
 type ScheduleItem = {
   id: string;
   code: string;
@@ -169,6 +172,8 @@ export default function TimetableApp({
     useState<Semester>("前期");
 
   const [selectionLoaded, setSelectionLoaded] = useState(false);
+
+  const [tutorialOpen, setTutorialOpen] = useState(false);
 
   // 前回の選択を復元
   useEffect(() => {
@@ -655,16 +660,32 @@ export default function TimetableApp({
           <button
             className={page === "timetable" ? "active" : ""}
             onClick={() => setPage("timetable")}
+            data-tour="timetable"
           >
             時間割ツール
           </button>
           <button
             className={page === "courses" ? "active" : ""}
             onClick={() => setPage("courses")}
+            data-tour="reviews"
           >
             履修口コミ
           </button>
         </nav>
+
+
+        <button
+          type="button"
+          className="tutorial-launch-btn"
+          onClick={() => {
+            setPage("timetable");
+            setTutorialOpen(false);
+            requestAnimationFrame(() => setTutorialOpen(true));
+          }}
+        >
+          <span aria-hidden="true">✦</span>
+          使い方
+        </button>
 
         <button className="theme-btn" onClick={changeTheme}>
           {themeLabel}
@@ -673,7 +694,7 @@ export default function TimetableApp({
 
       <main className="main">
         {page === "timetable" ? (
-          <section id="timetable">
+          <section id="timetable" data-tour="timetable">
             <div className="page-head">
               <div>
                 <div className="eyebrow">YOUR CAMPUS, YOUR PLAN</div>
@@ -685,12 +706,14 @@ export default function TimetableApp({
               <span className="pill">自動保存 · このブラウザ内</span>
             </div>
 
-            <GradeSelector
-              value={selectedGrade}
-              onChange={setSelectedGrade}
-              semester={selectedSemester}
-              onSemesterChange={setSelectedSemester}
-            />
+            <div data-tour="grade-selector">
+              <GradeSelector
+                value={selectedGrade}
+                onChange={setSelectedGrade}
+                semester={selectedSemester}
+                onSemesterChange={setSelectedSemester}
+              />
+            </div>
             <div className="workspace">
               <section className="panel">
                 <div className="schedule-tools">
@@ -801,6 +824,7 @@ export default function TimetableApp({
                               {item && course ? (
                                 <div
                                   className="course-block"
+                                  data-tour="course-block"
                                   draggable
                                   style={{
                                     background: course.color,
@@ -907,6 +931,7 @@ export default function TimetableApp({
                       return (
                         <button
                           key={course.id}
+                          data-tour="course-choice"
                           className={`course-choice${
                             pendingCode === courseCode ? " selected" : ""
                           }`}
@@ -1137,11 +1162,18 @@ export default function TimetableApp({
         </footer>
       </main>
 
+
       {toastMessage ? (
         <div className="toast" role="status">
           {toastMessage}
         </div>
       ) : null}
+
+      <TimetableTutorial
+        open={tutorialOpen}
+        onOpenChange={setTutorialOpen}
+        onStart={() => setPage("timetable")}
+      />
     </div>
   );
 }
