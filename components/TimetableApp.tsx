@@ -1049,12 +1049,19 @@ export default function TimetableApp({
             </div>
 
             <div className="course-catalog">
-              {courses.map((course) => (
-                <ReviewCard
-                  key={course.code}
-                  code={course.code}
-                />
-              ))}
+              {selectableCourses
+                .map((course) =>
+                  reviewCourses.find(
+                    (review) => review.name === course.course_name,
+                  ),
+                )
+                .filter((course) => course !== undefined)
+                .map((course) => (
+                  <ReviewCard
+                    key={course.code}
+                    code={course.code}
+                  />
+                ))}
             </div>
           </section>
         )}
