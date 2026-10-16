@@ -972,3 +972,55 @@ body {
     padding: 12px;
   }
 }
+.schedule-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 36px;
+  text-align: center;
+}
+
+.schedule-cta-message {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.schedule-cta-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-width: 240px;
+  padding: 16px 28px;
+  border-radius: 999px;
+  background: #ff4d8d;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 6px 0 #d93670;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.schedule-cta-button:hover {
+  background: #ff367e;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #d93670;
+}
+
+.schedule-cta-button:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #d93670;
+}
+
+@media (max-width: 600px) {
+  .schedule-cta-button {
+    width: 100%;
+    max-width: 320px;
+  }
+}

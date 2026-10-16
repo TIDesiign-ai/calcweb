@@ -68,13 +68,16 @@ export default async function CourseDetailPage({
           </article>
         ))}
 
-        <Link className="action secondary link-action" href="/#timetable">
-          時間割ツールに戻る
-        </Link>
+        <div className="schedule-cta">
+          <p className="schedule-cta-message">
+            次は、自分だけの時間割を作ろう！
+          </p>
 
-        <p className="small-muted detail-note">
-          ※ 一部の口コミは動作確認用のテストデータです。
-        </p>
+          <Link className="schedule-cta-button" href="/#timetable">
+            <span>時間割を作る！</span>
+            <span aria-hidden="true">→</span>
+          </Link>
+        </div>
       </section>
     </main>
   );
