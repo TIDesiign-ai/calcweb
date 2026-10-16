@@ -1241,3 +1241,13 @@ body {
 .schedule-cta-button-secondary:hover {
   background: #f9fafb;
 }
+/* スクロールバーを非表示にする */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* 旧Edge・IE */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome・Opera・Safari */
+}
