@@ -2,8 +2,7 @@
 
 import { gradeThemes, type Grade } from "../data/lib/grade-theme";
 import styles from "./GradeSelector.module.css";
-
-type Semester = "前期" | "後期";
+import type { Semester } from "../data/lib/course-selector";
 
 type Props = {
   value: Grade;

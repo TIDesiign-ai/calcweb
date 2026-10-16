@@ -1041,25 +1041,12 @@ export default function TimetableApp({
             </div>
 
             <div className="course-catalog">
-              {selectableCourses.map((course) => {
-                const reviewCourse = reviewCourses.find(
-                  (item) => item.name === course.course_name,
-                );
-
-                return (
-                  <button
-                    key={course.id}
-                    className={`course-choice${
-                      pendingCode === (reviewCourse?.code ?? course.id)
-                        ? " selected"
-                        : ""
-                    }`}
-                    // ここには既存の onClick、ドラッグ処理などを維持
-                  >
-                    {/* 既存の科目表示 */}
-                  </button>
-                );
-              })}
+              {courses.map((course) => (
+                <ReviewCard
+                  key={course.code}
+                  code={course.code}
+                />
+              ))}
             </div>
           </section>
         )}
