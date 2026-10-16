@@ -6,14 +6,14 @@ export const courseConfig: Record<
     textColor: string;
   }
 > = {
-  "プログラミング応用B": {
-    code: "programming-advanced-b",
+  "プログラミング応用": {
+    code: "プログラミング応用",
     color: "#d9f4e9",
     textColor: "#21654c",
   },
 
   "デジタルマーケティング演習": {
-    code: "digital-marketing",
+    code: "デジタルマーケティング演習",
     color: "#e4e9ff",
     textColor: "#34477d",
   },
