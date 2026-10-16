@@ -164,8 +164,44 @@ export default function TimetableApp({
 
 
 
+
   const [selectedSemester, setSelectedSemester] =
     useState<Semester>("前期");
+
+  const [selectionLoaded, setSelectionLoaded] = useState(false);
+
+  // 前回の選択を復元
+  useEffect(() => {
+    try {
+      const savedGrade = localStorage.getItem("selectedGrade");
+      const savedSemester = localStorage.getItem("selectedSemester");
+
+      if (savedGrade !== null) {
+        const grade = Number(savedGrade);
+
+        if ([1, 2, 3, 4].includes(grade)) {
+          setSelectedGrade(grade as Grade);
+        }
+      }
+
+      if (
+        savedSemester === "前期" ||
+        savedSemester === "後期"
+      ) {
+        setSelectedSemester(savedSemester);
+      }
+    } finally {
+      setSelectionLoaded(true);
+    }
+  }, []);
+
+  // 選択状態を保存
+  useEffect(() => {
+    if (!selectionLoaded) return;
+
+    localStorage.setItem("selectedGrade", String(selectedGrade));
+    localStorage.setItem("selectedSemester", selectedSemester);
+  }, [selectedGrade, selectedSemester, selectionLoaded]);
 
   const selectableCourses = useMemo(
     () => getSelectableCourses(selectedGrade, selectedSemester),
