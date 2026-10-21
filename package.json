@@ -1,11 +1,16 @@
 {
-  "name": "course-support",
+  "name": "@calc/calcweb",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "calccalc"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "dev:sub": "npm run dev --workspace=@calc/calccalc",
+    "build:sub": "npm run build --workspace=@calc/calccalc",
     "lint": "eslint",
     "db:export": "tsx scripts/local/export-courses.ts"
   },
