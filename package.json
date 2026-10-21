@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start",
     "dev:sub": "npm run dev --workspace=@calc/calccalc",
-    "build:sub": "npm run build --workspace=@calc/calccalc && node scripts/copy-calccalc.cjs",
+    "build:sub": "npm --prefix calccalc run build && node scripts/copy-calccalc.cjs",
     "lint": "eslint",
     "db:export": "tsx scripts/local/export-courses.ts"
   },
