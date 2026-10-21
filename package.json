@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start",
     "dev:sub": "npm run dev --workspace=@calc/calccalc",
-    "build:sub": "npm run build --workspace=@calc/calccalc",
+    "build:sub": "npm run build --workspace=@calc/calccalc && node -e \"const fs=require('fs'); fs.rmSync('public/static/calccalc',{recursive:true,force:true}); fs.cpSync('calccalc/out','static/calccalc',{recursive:true})\"",
     "lint": "eslint",
     "db:export": "tsx scripts/local/export-courses.ts"
   },

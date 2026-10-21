@@ -1126,8 +1126,13 @@ export default function TimetableApp({
                   配置後もドラッグして移動できます。
                   昼休みには自作予定を配置できます。
                 </div>
+                <a href="/static/calccalc/index.html">
+                  <button type="button">CalcCalc を開く</button>
+                </a>
               </aside>
             </div>
+
+
 
             <h2 className="section-title">口コミを見ながら選ぶ</h2>
             <div className="course-catalog">
