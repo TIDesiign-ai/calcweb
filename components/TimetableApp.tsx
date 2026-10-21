@@ -10,6 +10,7 @@ import { courses } from "../data/lib/reviews";
 import GradeSelector from "./GradeSelector";
 import type { Grade } from "../data/lib/grade-theme";
 
+
 import {
   getSelectableCourses,
   type Semester,
@@ -62,6 +63,10 @@ type ScheduleEvent = {
 const CUSTOM_BLOCKS_KEY = "course-nav-custom-blocks";
 const EVENTS_KEY = "course-nav-events";
 const DEFAULT_EVENT_COLOR = "#8b7cf6";
+
+type CourseModelId = "SE" | "IoT" | "DS" | "CS" | "CG" | "DE";
+
+
 
 type TimetableCourseInfo = {
   name: string;
@@ -157,6 +162,10 @@ export default function TimetableApp({
     blockId?: string;
   } | null>(null);
   const [trashActive, setTrashActive] = useState(false);
+
+  const [selectedModel, setSelectedModel] =
+    useState<CourseModelId | null>(null);
+
 
   const totalReviews = useMemo(
     () =>
@@ -711,6 +720,11 @@ export default function TimetableApp({
                 onChange={setSelectedGrade}
                 semester={selectedSemester}
                 onSemesterChange={setSelectedSemester}
+                selectedModel={selectedModel}
+                onModelChange={(model) => {
+                  setSelectedModel(model);
+                  notify(`履修モデルを「${model}」に設定しました`);
+                }}
               />
             </div>
             <div className="workspace">

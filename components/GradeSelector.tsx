@@ -4,11 +4,18 @@ import { gradeThemes, type Grade } from "../data/lib/grade-theme";
 import styles from "./GradeSelector.module.css";
 import type { Semester } from "../data/lib/course-selector";
 
+
+
+type CourseModelId = "SE" | "IoT" | "DS" | "CS" | "CG" | "DE";
+
 type Props = {
   value: Grade;
   onChange: (grade: Grade) => void;
   semester: Semester;
   onSemesterChange: (semester: Semester) => void;
+
+  selectedModel: CourseModelId | null;
+  onModelChange: (model: CourseModelId) => void;
 };
 
 export default function GradeSelector({
@@ -16,6 +23,8 @@ export default function GradeSelector({
   onChange,
   semester,
   onSemesterChange,
+  selectedModel,
+  onModelChange,
 }: Props) {
   return (
     <div className={styles.controls} aria-label="学年・学期選択">
@@ -62,6 +71,25 @@ export default function GradeSelector({
             {item}
           </button>
         ))}
+      </div>
+      <div className={styles.modelSelector}>
+        <span className={styles.modelHeading}>履修モデル</span>
+
+        <div className={styles.modelGrid}>
+          {(["SE", "IoT", "DS", "CS", "CG", "DE"] as const).map((model) => (
+            <button
+              key={model}
+              type="button"
+              className={`${styles.modelOption} ${
+                selectedModel === model ? styles.modelSelected : ""
+              }`}
+              aria-pressed={selectedModel === model}
+              onClick={() => onModelChange(model)}
+            >
+              {model}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
