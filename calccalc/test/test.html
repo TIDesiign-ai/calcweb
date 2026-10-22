@@ -1,0 +1,123 @@
+
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ファイル選択テスト</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+    body { max-width: 720px; margin: 0 auto; padding: 24px 16px; line-height: 1.6; }
+    h1 { font-size: 1.35rem; }
+    .panel { border: 1px solid #8888; border-radius: 12px; padding: 16px; margin: 16px 0; }
+    button, input { font: inherit; max-width: 100%; }
+    button { padding: 10px 14px; margin: 4px 4px 4px 0; }
+    #drop { border: 2px dashed #888; border-radius: 12px; padding: 22px 12px; text-align: center; }
+    #status { white-space: pre-wrap; overflow-wrap: anywhere; }
+    #preview { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 260px; overflow: auto; }
+    .hint { opacity: .8; font-size: .92rem; }
+  </style>
+</head>
+<body>
+  <h1>Android Chrome ファイル選択テスト</h1>
+  <p class="hint">このページはファイルをサーバーへ送信しません。選択したファイルはこのブラウザ内で読み込みます。</p>
+
+  <section class="panel">
+    <h2>テスト A：通常のファイル入力</h2>
+    <label for="fileInput">ファイルを選択：</label><br>
+    <input id="fileInput" type="file">
+  </section>
+
+  <section class="panel">
+    <h2>テスト B：ボタンからファイル選択</h2>
+    <button id="openButton" type="button">ファイル選択を開く</button>
+    <input id="buttonFileInput" type="file" hidden>
+  </section>
+
+  <section class="panel">
+    <h2>テスト C：複数ファイル</h2>
+    <input id="multiInput" type="file" multiple>
+  </section>
+
+  <section class="panel">
+    <h2>結果</h2>
+    <p id="status" role="status" aria-live="polite">まだファイルは選択されていません。</p>
+    <h3>テキストファイルの先頭（最大 2,000 文字）</h3>
+    <pre id="preview">ここに読み込み結果が表示されます。</pre>
+    <button id="clearButton" type="button">結果をクリア</button>
+  </section>
+
+  <script>
+    (() => {
+      const status = document.getElementById("status");
+      const preview = document.getElementById("preview");
+
+      function log(message) {
+        status.textContent = `${new Date().toLocaleTimeString()}\\n${message}`;
+      }
+
+      async function inspectFiles(fileList, source) {
+        log(`${source}: change イベント発火\\n選択ファイル数: ${fileList ? fileList.length : "files が null"}`);
+
+        if (!fileList || fileList.length === 0) {
+          preview.textContent = "change は発火しましたが、ファイルはありません。";
+          return;
+        }
+
+        const file = fileList[0];
+        log(
+          `${source}: change イベント発火\\n` +
+          `名前: ${file.name}\\n` +
+          `サイズ: ${file.size} bytes\\n` +
+          `MIME type: ${file.type || "(未指定)"}\\n` +
+          `最終更新: ${file.lastModified ? new Date(file.lastModified).toLocaleString() : "(未指定)"}`
+        );
+
+        const looksText = file.type.startsWith("text/") ||
+          /\\.(txt|html?|json|md|csv|js|ts|css|xml|log)$/i.test(file.name);
+
+        if (!looksText) {
+          preview.textContent = "ファイル情報の取得に成功しました。テキストファイルではないため、内容表示は省略しました。";
+          return;
+        }
+
+        try {
+          const content = await file.text();
+          preview.textContent = content.slice(0, 2000) + (content.length > 2000 ? "\\n…（以下省略）" : "");
+          log(
+            `${source}: ファイル読み込み成功\\n` +
+            `名前: ${file.name}\\nサイズ: ${file.size} bytes\\n` +
+            `読み込み文字数: ${content.length}`
+          );
+        } catch (error) {
+          preview.textContent = `読み込みエラー: ${error}`;
+          log(`${source}: ファイルは選択できましたが、読み込みに失敗しました。\\n${error}`);
+        }
+      }
+
+      document.getElementById("fileInput").addEventListener("change", event => {
+        void inspectFiles(event.currentTarget.files, "テスト A");
+      });
+
+      const buttonInput = document.getElementById("buttonFileInput");
+      document.getElementById("openButton").addEventListener("click", () => {
+        log("テスト B: ボタンの click イベント発火。ファイル選択画面を開きます。");
+        buttonInput.click();
+      });
+      buttonInput.addEventListener("change", event => {
+        void inspectFiles(event.currentTarget.files, "テスト B");
+      });
+
+      document.getElementById("multiInput").addEventListener("change", event => {
+        const files = Array.from(event.currentTarget.files || []);
+        log("テスト C: change イベント発火\\n" + files.map((f, i) => `${i + 1}. ${f.name} (${f.size} bytes)`).join("\\n"));
+        preview.textContent = files.length ? "複数ファイルの選択に成功しました。" : "ファイルは選択されていません。";
+      });
+
+      document.getElementById("clearButton").addEventListener("click", () => {
+        status.textContent = "結果をクリアしました。";
+        preview.textContent = "ここに読み込み結果が表示されます。";
+      });
+    })();
+  </script>
+</body>
+</html>
