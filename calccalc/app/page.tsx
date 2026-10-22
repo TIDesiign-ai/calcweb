@@ -495,57 +495,6 @@ export default function Home() {
           {importMessage && <p role="status" style={{ margin: "12px 0 0", fontSize: 13, lineHeight: 1.7, color: importMessage.startsWith("読み込み完了") ? "#167447" : "#b45309" }}>{importMessage}</p>}
         </section>
 
-        <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 20, marginBottom: 22 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
-            <div><div style={{ color: "#3563e9", fontSize: 11, fontWeight: 800 }}>STEP 02</div><h2 style={{ fontSize: 20, margin: "5px 0 0" }}>単位データを確認・修正</h2></div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              <button onClick={clearForm} style={buttonStyle}>すべてクリア</button>
-              <button onClick={exportJson} style={buttonStyle}>JSONを書き出す ↓</button>
-              <label style={{ ...buttonStyle, display: "inline-flex", alignItems: "center" }}>JSONを読み込む<input type="file" accept="application/json,.json" onChange={(event) => { importJson(event.target.files?.[0]); event.currentTarget.value = ""; }} style={{ display: "none" }} /></label>
-            </div>
-          </div>
-          <p style={{ color: "#718096", fontSize: 12, lineHeight: 1.8, marginTop: 0 }}>白い入力欄に数値を入力してください。合計列・不足単位は自動計算されるため、入力は不要です。表は横にスクロールできます。</p>
-
-          <div style={{ overflowX: "auto", border: "1px solid #e2e8f0", borderRadius: 10 }}>
-            <table style={{ borderCollapse: "separate", borderSpacing: 0, minWidth: 1740, width: "100%", fontSize: 12 }}>
-              <thead>
-                <tr>
-                  <th rowSpan={2} style={{ position: "sticky", left: 0, zIndex: 3, background: "#f2f5fa", borderBottom: "1px solid #dce3ee", borderRight: "1px solid #e2e8f0", padding: "12px 14px", textAlign: "left", minWidth: 94 }}>分野区分</th>
-                  <th colSpan={10} style={groupHeaderStyle}>基礎科目</th>
-                  <th colSpan={4} style={groupHeaderStyle}>職業専門科目</th>
-                  <th colSpan={3} style={groupHeaderStyle}>展開科目</th>
-                  <th colSpan={1} style={groupHeaderStyle}>総合科目</th>
-                  <th colSpan={2} style={{ ...groupHeaderStyle, background: "#e9efff" }}>合計</th>
-                </tr>
-                <tr>
-                  {FIELDS.map((field) => <th key={field.key} style={{ ...fieldHeaderStyle, background: field.group === "合計" ? "#f1f4ff" : "#fafbfe" }}>{field.label}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {ROWS.map((row) => (
-                  <tr key={row.kind}>
-                    <th style={{ position: "sticky", left: 0, zIndex: 2, background: row.kind === "requirement" ? "#edf2ff" : row.kind === "shortage" ? "#fff6e8" : "#fff", borderBottom: "1px solid #e6eaf1", borderRight: "1px solid #e6eaf1", padding: "12px 14px", textAlign: "left", whiteSpace: "nowrap" }}>{row.label}</th>
-                    {FIELDS.map((field) => {
-                      const cell = getCellValue(row.kind, field.key, required, earned, enrolled);
-                      const isEditable = !!field.inputKey && row.kind !== "shortage";
-                      const inputSet = row.kind === "requirement" ? required : row.kind === "earned" ? earned : enrolled;
-                      const autoBackground = row.kind === "shortage" ? "#fff8ed" : field.derived ? "#f5f7fb" : "#fff";
-                      return <td key={field.key} style={{ borderBottom: "1px solid #e6eaf1", borderRight: "1px solid #f0f2f6", padding: 6, textAlign: "center", background: autoBackground }}>
-                        {isEditable && field.inputKey ? (
-                          <input aria-label={`${row.label} ${field.label}`} type="number" min="0" step="0.5" inputMode="decimal" value={inputSet[field.inputKey]} onChange={(event) => updateInput(row.kind as "requirement" | "earned" | "enrolled", field.inputKey!, event.target.value)} placeholder="—" style={inputStyle} />
-                        ) : (
-                          <span style={{ display: "inline-block", minWidth: 55, padding: "8px 4px", fontWeight: field.derived || row.kind === "shortage" ? 700 : 400, color: row.kind === "shortage" && num(cell) > 0 ? "#a85b00" : "#26344d" }}>{cell === "" ? "—" : cell}</span>
-                        )}
-                      </td>;
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div style={{ marginTop: 12, color: "#758198", fontSize: 11, lineHeight: 1.7 }}>※ 不足単位は「卒業要件 − 修得単位」で計算します。履修中の単位は不足単位から差し引かず、卒業までに追加で必要な目安にのみ反映します。</div>
-        </section>
-
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginBottom: 22 }}>
           {[
             { label: "卒業要件", value: totalRequired, bg: "#eaf0ff" },
@@ -694,6 +643,57 @@ export default function Home() {
               </div>
             </section>
           ))}
+        </section>
+
+        <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 20, marginBottom: 22 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
+            <div><div style={{ color: "#3563e9", fontSize: 11, fontWeight: 800 }}>STEP 02</div><h2 style={{ fontSize: 20, margin: "5px 0 0" }}>単位データを確認・修正</h2></div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <button onClick={clearForm} style={buttonStyle}>すべてクリア</button>
+              <button onClick={exportJson} style={buttonStyle}>JSONを書き出す ↓</button>
+              <label style={{ ...buttonStyle, display: "inline-flex", alignItems: "center" }}>JSONを読み込む<input type="file" accept="application/json,.json" onChange={(event) => { importJson(event.target.files?.[0]); event.currentTarget.value = ""; }} style={{ display: "none" }} /></label>
+            </div>
+          </div>
+          <p style={{ color: "#718096", fontSize: 12, lineHeight: 1.8, marginTop: 0 }}>白い入力欄に数値を入力してください。合計列・不足単位は自動計算されるため、入力は不要です。表は横にスクロールできます。</p>
+
+          <div style={{ overflowX: "auto", border: "1px solid #e2e8f0", borderRadius: 10 }}>
+            <table style={{ borderCollapse: "separate", borderSpacing: 0, minWidth: 1740, width: "100%", fontSize: 12 }}>
+              <thead>
+                <tr>
+                  <th rowSpan={2} style={{ position: "sticky", left: 0, zIndex: 3, background: "#f2f5fa", borderBottom: "1px solid #dce3ee", borderRight: "1px solid #e2e8f0", padding: "12px 14px", textAlign: "left", minWidth: 94 }}>分野区分</th>
+                  <th colSpan={10} style={groupHeaderStyle}>基礎科目</th>
+                  <th colSpan={4} style={groupHeaderStyle}>職業専門科目</th>
+                  <th colSpan={3} style={groupHeaderStyle}>展開科目</th>
+                  <th colSpan={1} style={groupHeaderStyle}>総合科目</th>
+                  <th colSpan={2} style={{ ...groupHeaderStyle, background: "#e9efff" }}>合計</th>
+                </tr>
+                <tr>
+                  {FIELDS.map((field) => <th key={field.key} style={{ ...fieldHeaderStyle, background: field.group === "合計" ? "#f1f4ff" : "#fafbfe" }}>{field.label}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {ROWS.map((row) => (
+                  <tr key={row.kind}>
+                    <th style={{ position: "sticky", left: 0, zIndex: 2, background: row.kind === "requirement" ? "#edf2ff" : row.kind === "shortage" ? "#fff6e8" : "#fff", borderBottom: "1px solid #e6eaf1", borderRight: "1px solid #e6eaf1", padding: "12px 14px", textAlign: "left", whiteSpace: "nowrap" }}>{row.label}</th>
+                    {FIELDS.map((field) => {
+                      const cell = getCellValue(row.kind, field.key, required, earned, enrolled);
+                      const isEditable = !!field.inputKey && row.kind !== "shortage";
+                      const inputSet = row.kind === "requirement" ? required : row.kind === "earned" ? earned : enrolled;
+                      const autoBackground = row.kind === "shortage" ? "#fff8ed" : field.derived ? "#f5f7fb" : "#fff";
+                      return <td key={field.key} style={{ borderBottom: "1px solid #e6eaf1", borderRight: "1px solid #f0f2f6", padding: 6, textAlign: "center", background: autoBackground }}>
+                        {isEditable && field.inputKey ? (
+                          <input aria-label={`${row.label} ${field.label}`} type="number" min="0" step="0.5" inputMode="decimal" value={inputSet[field.inputKey]} onChange={(event) => updateInput(row.kind as "requirement" | "earned" | "enrolled", field.inputKey!, event.target.value)} placeholder="—" style={inputStyle} />
+                        ) : (
+                          <span style={{ display: "inline-block", minWidth: 55, padding: "8px 4px", fontWeight: field.derived || row.kind === "shortage" ? 700 : 400, color: row.kind === "shortage" && num(cell) > 0 ? "#a85b00" : "#26344d" }}>{cell === "" ? "—" : cell}</span>
+                        )}
+                      </td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div style={{ marginTop: 12, color: "#758198", fontSize: 11, lineHeight: 1.7 }}>※ 不足単位は「卒業要件 − 修得単位」で計算します。履修中の単位は不足単位から差し引かず、卒業までに追加で必要な目安にのみ反映します。</div>
         </section>
 
         <footer style={{ textAlign: "center", color: "#8993a3", fontSize: 11, lineHeight: 1.8 }}>成績表DI — 卒業要件の確認を支援するシミュレーターです。<br />正式な卒業判定は学校の規定を確認してください。</footer>
