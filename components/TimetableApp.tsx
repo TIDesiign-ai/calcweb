@@ -1126,8 +1126,8 @@ export default function TimetableApp({
                   配置後もドラッグして移動できます。
                   昼休みには自作予定を配置できます。
                 </div>
-                <a href="/static/calccalc/index.html">
-                  <button type="button">CalcCalc を開く</button>
+                <a href="https://tidesiign-ai.github.io/calcweb/">
+                  <button type="button">単位計算機 を開く</button>
                 </a>
               </aside>
             </div>
