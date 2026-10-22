@@ -20,17 +20,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout calcweb repository
+      - name: Checkout calccalc repository
         uses: actions/checkout@v4
+        with:
+          repository: TIDesiign-ai/calccalc
+          ref: deploy-pages
+          path: calccalc
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
+      - name: Verify source files
+        working-directory: calccalc
+        run: |
+          test -f package.json
+          test -f package-lock.json
+          test -f next.config.ts
+
       - name: Install dependencies
         working-directory: calccalc
-        run: npm ci --verbose --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
         timeout-minutes: 5
 
       - name: Configure Pages
@@ -43,7 +54,11 @@ jobs:
         run: npm run build
 
       - name: Verify export
-        run: test -f calccalc/out/index.html
+        working-directory: calccalc
+        run: |
+          test -f out/index.html
+          echo "=== Exported JavaScript files ==="
+          find out/_next -type f -name '*.js' | head -20
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
