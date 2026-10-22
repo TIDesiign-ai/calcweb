@@ -4,7 +4,7 @@ const isGitHubPages = process.env.GITHUB_PAGES === "true";
 
 const nextConfig: NextConfig = {
   output: "export",
-  basePath: isGitHubPages ? "/calccalc" : "",
+  basePath: isGitHubPages ? "/calcweb" : "",
   images: {
     unoptimized: true,
   },
