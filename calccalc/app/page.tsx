@@ -444,8 +444,13 @@ export default function Home() {
   }
 
   return (
-    <main style={{ minHeight: "100vh", background: "#f4f6fb", color: "#172033", fontFamily: "Arial, 'Noto Sans JP', sans-serif" }}>
-      <header style={{ background: "#fff", borderBottom: "1px solid #e3e8f0", padding: "18px max(4%, calc((100% - 1180px) / 2))", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+
+    <main
+      className="degree-inspector"
+      style={{ minHeight: "100vh", background: "#f4f6fb", color: "#172033", fontFamily: "Arial, 'Noto Sans JP', sans-serif" }}>
+      <header
+        className="di-header"
+        style={{ background: "#fff", borderBottom: "1px solid #e3e8f0", padding: "18px max(4%, calc((100% - 1180px) / 2))", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
         <div style={{ fontSize: 21, fontWeight: 800 }}>成績表<span style={{ color: "#3563e9" }}>DI</span></div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <a href="/grades" style={{ color: "#3563e9", fontSize: 13, fontWeight: 700, textDecoration: "none" }}>科目別成績を見る →</a>
@@ -453,14 +458,18 @@ export default function Home() {
         </div>
       </header>
 
-      <div style={{ width: "min(1180px, 94%)", margin: "0 auto", padding: "34px 0 48px" }}>
-        <section style={{ marginBottom: 26 }}>
+      <div
+        className="di-content"
+        style={{ width: "min(1180px, 94%)", margin: "0 auto", padding: "34px 0 48px" }}>
+        <section
+          className="di-section di-import"
+          style={{ marginBottom: 26 }}>
           <div style={{ color: "#3563e9", fontSize: 11, fontWeight: 800, letterSpacing: 2 }}>DEGREE INSPECTOR</div>
           <h1 style={{ fontSize: "clamp(27px, 4vw, 40px)", lineHeight: 1.35, margin: "10px 0" }}>卒業までの道のりを、<br />ひと目でわかるように。</h1>
           <p style={{ color: "#718096", lineHeight: 1.8, fontSize: 14, marginBottom: 0 }}>成績表のHTMLファイルを選ぶだけ。卒業要件・修得単位・履修単位を自動で読み取り、卒業までの単位状況を確認できます。</p>
         </section>
 
-        <section style={{ background: "#fff", border: "1px solid #dbe4f4", borderRadius: 16, padding: 20, marginBottom: 22 }}>
+        <section className="di-section di-import" style={{ background: "#fff", border: "1px solid #dbe4f4", borderRadius: 16, padding: 20, marginBottom: 22 }}>
           <div style={{ color: "#3563e9", fontSize: 11, fontWeight: 800 }}>STEP 01</div>
           <h2 style={{ fontSize: 20, margin: "5px 0 8px" }}>成績表をインポート</h2>
           <p style={{ color: "#718096", fontSize: 13, lineHeight: 1.8, marginTop: 0 }}>Active Academyの成績表をHTMLファイル（.html / .htm）として保存し、ここから選択してください。ファイルはブラウザ内で解析し、サーバーには送信しません。</p>
@@ -495,7 +504,7 @@ export default function Home() {
           {importMessage && <p role="status" style={{ margin: "12px 0 0", fontSize: 13, lineHeight: 1.7, color: importMessage.startsWith("読み込み完了") ? "#167447" : "#b45309" }}>{importMessage}</p>}
         </section>
 
-        <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginBottom: 22 }}>
+        <section className="di-section di-import" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginBottom: 22 }}>
           {[
             { label: "卒業要件", value: totalRequired, bg: "#eaf0ff" },
             { label: "修得済み", value: totalEarned, bg: "#e8f8ef" },
@@ -504,7 +513,7 @@ export default function Home() {
           ].map((item) => <article key={item.label} style={{ background: item.bg, border: "1px solid #e2e8f0", borderRadius: 14, padding: 19 }}><div style={{ color: "#718096", fontSize: 12, marginBottom: 10 }}>{item.label}</div><strong style={{ fontSize: 29 }}>{item.value}<span style={{ fontSize: 12, marginLeft: 5 }}>単位</span></strong></article>)}
         </section>
 
-        <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 22, marginBottom: 22 }}>
+        <section className="di-section di-import" style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 22, marginBottom: 22 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 12 }}><h2 style={{ fontSize: 20, margin: 0 }}>取得状況</h2><strong style={{ color: "#3563e9" }}>{progress.toFixed(1)}%</strong></div>
           <div style={{ height: 10, background: "#edf0f5", borderRadius: 20, overflow: "hidden", marginBottom: 24 }}><div style={{ width: `${progress}%`, height: "100%", background: "#3563e9", borderRadius: 20, transition: "width .2s" }} /></div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 22 }}>
@@ -515,7 +524,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 22, marginBottom: 22 }}>
+        <section className="di-section di-import" style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 22, marginBottom: 22 }}>
           <h2 style={{ fontSize: 20, margin: "0 0 6px" }}>選択科目の取得状況</h2>
           <p style={{ margin: "0 0 16px", color: "#718096", fontSize: 12, lineHeight: 1.7 }}>カテゴリごとに修得単位数と卒業要件を比較します。不足単位は「必要単位 − 修得単位」で表示します。</p>
           <button
@@ -525,7 +534,7 @@ export default function Home() {
           >
             {showShortages ? "赤色表示を解除" : "不足している科目を確認する"}
           </button>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 12 }}>
+          <div className="di-credit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 12 }}>
             {creditCardGroups.selective.map((card) => (
               <article key={card.key} style={{ border: `1px solid ${showShortages && card.hasData && card.shortageCredits > 0 ? "#b91c1c" : "#e2e8f0"}`, borderRadius: 13, padding: 16, background: showShortages && card.hasData && card.shortageCredits > 0 ? "#ef1717" : "#fff", color: showShortages && card.hasData && card.shortageCredits > 0 ? "#fff" : "#172033", boxShadow: showShortages && card.hasData && card.shortageCredits > 0 ? "0 4px 12px rgba(185,28,28,.18)" : "none" }}>
                 <div style={{ fontSize: 13, color: showShortages && card.hasData && card.shortageCredits > 0 ? "#fff" : "#59667c", fontWeight: 700, minHeight: 36 }}>{card.label}</div>
@@ -544,10 +553,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 22, marginBottom: 22 }}>
+        <section className="di-section di-import" style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 22, marginBottom: 22 }}>
           <h2 style={{ fontSize: 20, margin: "0 0 6px" }}>必修・コア科目の取得状況</h2>
           <p style={{ margin: "0 0 16px", color: "#718096", fontSize: 12, lineHeight: 1.7 }}>必修科目と職業専門コア科目について、修得済み単位と不足単位を確認できます。</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 12 }}>
+          <div className="di-credit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 12 }}>
             {creditCardGroups.mandatory.map((card) => (
               <article key={card.key} style={{ border: `1px solid ${showShortages && card.hasData && card.shortageCredits > 0 ? "#b91c1c" : "#e2e8f0"}`, borderRadius: 13, padding: 16, background: showShortages && card.hasData && card.shortageCredits > 0 ? "#ef1717" : "#fff", color: showShortages && card.hasData && card.shortageCredits > 0 ? "#fff" : "#172033", boxShadow: showShortages && card.hasData && card.shortageCredits > 0 ? "0 4px 12px rgba(185,28,28,.18)" : "none" }}>
                 <div style={{ fontSize: 13, color: showShortages && card.hasData && card.shortageCredits > 0 ? "#fff" : "#59667c", fontWeight: 700, minHeight: 36 }}>{card.label}</div>
@@ -566,9 +575,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 22, marginBottom: 22 }}>
+        <section className="di-section di-import" style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 22, marginBottom: 22 }}>
           <h2 style={{ fontSize: 20, margin: "0 0 6px" }}>その他の卒業要件</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 12 }}>
+          <div className="di-credit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 12 }}>
             {creditCardGroups.other.map((card) => (
               <article key={card.key} style={{ border: `1px solid ${showShortages && card.hasData && card.shortageCredits > 0 ? "#b91c1c" : "#e2e8f0"}`, borderRadius: 13, padding: 16, background: showShortages && card.hasData && card.shortageCredits > 0 ? "#ef1717" : "#fff", color: showShortages && card.hasData && card.shortageCredits > 0 ? "#fff" : "#172033", boxShadow: showShortages && card.hasData && card.shortageCredits > 0 ? "0 4px 12px rgba(185,28,28,.18)" : "none" }}>
                 <div style={{ fontSize: 13, color: showShortages && card.hasData && card.shortageCredits > 0 ? "#fff" : "#59667c", fontWeight: 700 }}>{card.label}</div>
@@ -584,7 +593,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 22, marginBottom: 22 }}>
+        <section className="di-section di-import" style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 22, marginBottom: 22 }}>
           <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 14 }}>
             <div>
               <h2 style={{ fontSize: 20, margin: 0 }}>これまでに修得した科目</h2>
@@ -645,7 +654,7 @@ export default function Home() {
           ))}
         </section>
 
-        <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 20, marginBottom: 22 }}>
+        <section className="di-section di-import" style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 20, marginBottom: 22 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
             <div><div style={{ color: "#3563e9", fontSize: 11, fontWeight: 800 }}>STEP 02</div><h2 style={{ fontSize: 20, margin: "5px 0 0" }}>単位データを確認・修正</h2></div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
