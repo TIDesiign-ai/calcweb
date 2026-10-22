@@ -36,7 +36,8 @@ jobs:
 
       - name: Install dependencies
         working-directory: calccalc
-        run: npm ci
+        run: npm ci --verbose --no-audit --no-fund
+        timeout-minutes: 5
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
