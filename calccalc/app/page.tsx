@@ -472,22 +472,17 @@ export default function Home() {
               type="file"
               accept=".html,.htm,text/html"
               onChange={async (event) => {
-                console.log("[成績表DI] React onChange 発火");
 
                 const input = event.currentTarget;
                 const file = input.files?.[0];
 
-                console.log("[成績表DI] file:", file?.name);
 
                 if (!file) return;
 
                 try {
-                  console.log("[成績表DI] importGradeFile 開始");
                   await importGradeFile(file);
-                  console.log("[成績表DI] importGradeFile 完了");
                 } catch (error) {
-                  console.error("[成績表DI] 読み込みエラー:", error);
-                  setImportMessage("読み込み中にエラーが発生しました。Consoleを確認してください。");
+                  setImportMessage("読み込み中にエラーが発生しました。");
                 } finally {
                   input.value = "";
                 }
