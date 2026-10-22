@@ -20,12 +20,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout calccalc repository
+      - name: Checkout calcweb repository
         uses: actions/checkout@v4
-        with:
-          repository: TIDesiign-ai/calccalc
-          ref: deploy-pages
-          path: calccalc
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
