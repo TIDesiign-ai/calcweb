@@ -20,30 +20,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: Checkout parent repository
-        uses: actions/checkout@v4
-        with:
-          path: parent
-
       - name: Checkout calccalc repository
         uses: actions/checkout@v4
         with:
           repository: TIDesiign-ai/calccalc
           ref: deploy-pages
-          path: parent/calccalc
+          path: calccalc
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: calccalc/package-lock.json
 
       - name: Install dependencies
-        working-directory: parent
+        working-directory: calccalc
         run: npm ci
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Build calccalc
-        working-directory: parent
-        run: npm run build:sub
+      - name: Build static site
+        working-directory: calccalc
+        env:
+          GITHUB_PAGES: "true"
+        run: npm run build
 
       - name: Verify export
         run: test -f calccalc/out/index.html
