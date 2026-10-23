@@ -294,7 +294,11 @@ const buttonStyle: React.CSSProperties = {
   cursor: "pointer",
 };
 
-export default function Home() {
+type HomeProps = {
+  onBack: () => void;
+};
+
+export default function Home({ onBack }: HomeProps) {
   const [required, setRequired] = useState<Inputs>({ ...INITIAL_INPUTS });
   const [earned, setEarned] = useState<Inputs>({ ...INITIAL_INPUTS });
   const [enrolled, setEnrolled] = useState<Inputs>({ ...INITIAL_INPUTS });
@@ -453,7 +457,24 @@ export default function Home() {
         style={{ background: "#fff", borderBottom: "1px solid #e3e8f0", padding: "18px max(4%, calc((100% - 1180px) / 2))", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
         <div style={{ fontSize: 21, fontWeight: 800 }}>成績表<span style={{ color: "#3563e9" }}>DI</span></div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <a href="https://tid-schedulemaker.lolipop-now.app" style={{ color: "#3563e9", fontSize: 13, fontWeight: 700, textDecoration: "none" }}>履修ナビに戻る！</a>
+          <button
+            type="button"
+            onClick={onBack}
+            style={buttonStyle}
+          >
+            ← 戻る
+          </button>
+          <a
+            href="https://tid-schedulemaker.lolipop-now.app"
+            style={{
+              color: "#3563e9",
+              fontSize: 13,
+              fontWeight: 700,
+              textDecoration: "none",
+            }}
+          >
+            履修ナビに戻る！
+          </a>
         </div>
       </header>
 

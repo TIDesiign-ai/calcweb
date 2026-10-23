@@ -145,9 +145,9 @@ type TimetableAppProps = {
 export default function TimetableApp({
   initialPage = "timetable",
 }: TimetableAppProps) {
-  const [page, setPage] = useState<"timetable" | "courses">(
-    initialPage,
-  );
+  const [page, setPage] = useState<
+    "courses" | "timetable" | "calccalc"
+  >("timetable");
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const [theme, setTheme] = useState<Theme>("light");
   const [ready, setReady] = useState(false);
