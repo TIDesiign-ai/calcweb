@@ -1188,7 +1188,7 @@ export default function TimetableApp({
             </div>
             </section>
             ) : page === "calccalc" ? (
-              <CreditSimulator onBack={() => setPage("timetable")} />
+              <CreditSimulator onBackAction={() => setPage("timetable")} />
             ) : (
               <section id="courses">
                 {/* 既存の口コミページの内容 */}
