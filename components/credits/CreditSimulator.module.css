@@ -199,3 +199,147 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
     grid-template-columns: 1fr !important;
   }
 }
+
+/* 成績表DI：ライトモード */
+.degree-inspector {
+  --di-bg: #f4f6fb;
+  --di-surface: #ffffff;
+  --di-surface-soft: #f8faff;
+  --di-surface-muted: #f2f5fc;
+  --di-input-bg: #ffffff;
+  --di-text: #172033;
+  --di-text-secondary: #59667c;
+  --di-text-muted: #718096;
+  --di-border: #e2e8f0;
+  --di-border-strong: #d5deec;
+  --di-table-head: #fafbfe;
+  --di-table-line: #edf0f5;
+  --di-progress-bg: #edf0f5;
+}
+
+/* ダークモード */
+.degree-inspector[data-theme="dark"] {
+  color-scheme: dark;
+
+  --di-bg: #11151e;
+  --di-surface: #1b2230;
+  --di-surface-soft: #202a3a;
+  --di-surface-muted: #252f41;
+  --di-input-bg: #151c29;
+  --di-text: #e7edf7;
+  --di-text-secondary: #c0cbdd;
+  --di-text-muted: #9aa9bf;
+  --di-border: #344157;
+  --di-border-strong: #43516a;
+  --di-table-head: #222c3d;
+  --di-table-line: #303b4e;
+  --di-progress-bg: #303b4e;
+}
+
+/* ベース */
+.degree-inspector {
+  background: var(--di-bg) !important;
+  color: var(--di-text) !important;
+  transition: background-color .2s, color .2s;
+}
+
+.degree-inspector .di-section {
+  color: var(--di-text);
+}
+
+.degree-inspector .di-section:not(.di-import) {
+  color: var(--di-text);
+}
+
+/* 白いカード・セクション */
+.degree-inspector section[style*="background: rgb(255, 255, 255)"],
+.degree-inspector article[style*="background: rgb(255, 255, 255)"] {
+  background: var(--di-surface) !important;
+  border-color: var(--di-border) !important;
+}
+
+/* ヘッダー */
+.degree-inspector .di-header {
+  background: var(--di-surface) !important;
+  border-color: var(--di-border) !important;
+}
+
+/* 見出し・本文 */
+.degree-inspector h1,
+.degree-inspector h2,
+.degree-inspector h3,
+.degree-inspector strong,
+.degree-inspector td {
+  color: var(--di-text);
+}
+
+.degree-inspector p,
+.degree-inspector label span {
+  color: var(--di-text-muted);
+}
+
+/* 入力欄 */
+.degree-inspector input:not([type="file"]) {
+  background: var(--di-input-bg) !important;
+  color: var(--di-text) !important;
+  border-color: var(--di-border-strong) !important;
+}
+
+.degree-inspector input::placeholder {
+  color: var(--di-text-muted);
+}
+
+/* ボタン */
+.degree-inspector button,
+.degree-inspector label[style*="cursor: pointer"] {
+  border-color: var(--di-border-strong);
+}
+
+.degree-inspector button:not([style*="background: rgb(239, 23, 23)"]) {
+  color: var(--di-text);
+}
+
+/* 表 */
+.degree-inspector table th {
+  background: var(--di-table-head);
+  color: var(--di-text-secondary);
+  border-color: var(--di-border);
+}
+
+.degree-inspector table td {
+  border-color: var(--di-table-line) !important;
+}
+
+.degree-inspector table tbody tr th {
+  background: var(--di-surface-muted);
+}
+
+/* 科目カテゴリの見出し */
+.degree-inspector section section > div:first-child {
+  background: var(--di-surface-muted);
+}
+
+/* 進捗バー */
+.degree-inspector [style*="background: rgb(237, 240, 245)"] {
+  background: var(--di-progress-bg) !important;
+}
+
+/* テーマ切替ボタン */
+.degree-inspector .di-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border: 1px solid var(--di-border-strong);
+  border-radius: 10px;
+  background: var(--di-surface);
+  color: var(--di-text);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.degree-inspector .di-theme-toggle:hover {
+  background: var(--di-surface-muted);
+}
