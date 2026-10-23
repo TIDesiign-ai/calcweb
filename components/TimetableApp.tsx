@@ -39,11 +39,9 @@ const THEME_KEY = "course-nav-theme";
 const TIMETABLE_ROWS = [
   { label: "1限", start: "9:10", end: "10:50", periodIndex: 0 },
   { label: "2限", start: "11:00", end: "12:40", periodIndex: 1 },
-  { label: "昼休み", start: "12:40", end: "13:40", periodIndex: null },
   { label: "3限", start: "13:40", end: "15:20", periodIndex: 2 },
   { label: "4限", start: "15:30", end: "17:10", periodIndex: 3 },
   { label: "5限", start: "17:20", end: "19:00", periodIndex: 4 },
-  { label: "放課後", start: "19:00", end: "20:00", periodIndex: null },
 ] as const;
 
 type CustomBlock = {
