@@ -177,7 +177,7 @@ a { color: inherit; text-decoration: none; }
 .timetable {
   display: grid;
   grid-template-columns: 65px repeat(5, minmax(90px, 1fr));
-  grid-template-rows: 40px repeat(7, 120px);
+  grid-template-rows: 40px repeat(5, 120px);
   min-width: 690px;
   gap: 5px;
 }
@@ -355,7 +355,7 @@ a { color: inherit; text-decoration: none; }
   .side { order: -1; }
   .course-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .course-catalog { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .timetable { grid-template-rows: 36px repeat(7, 160px); }
+  .timetable { grid-template-rows: 36px repeat(5, 160px); }
 }
 @media (max-width: 600px) {
   .topbar {
@@ -377,7 +377,7 @@ a { color: inherit; text-decoration: none; }
   .detail-panel { padding: 20px; }
   .timetable {
     grid-template-columns: 50px repeat(5, minmax(90px, 1fr));
-    grid-template-rows: 34px repeat(7, 85px);
+    grid-template-rows: 34px repeat(5, 85px);
     min-width: 625px;
   }
 }
@@ -690,7 +690,7 @@ body {
       width: 100%;
       min-width: 0;
       grid-template-columns: 40px repeat(5, minmax(0, 1fr));
-      grid-template-rows: 28px repeat(7 , 70px);
+      grid-template-rows: 28px repeat(5 , 70px);
       gap: 2px;
     }
 
