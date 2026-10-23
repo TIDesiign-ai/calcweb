@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+* { box-sizing: border-box; }
+html { min-height: 100%; }
+body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif; -webkit-font-smoothing: antialiased; }
+button, textarea, input { font: inherit; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid #9ab5ff; outline-offset: 2px; }
+::selection { background: #dce7ff; color: #182230; }
+
+/* Degree Inspector: mobile responsive */
+@media (max-width: 600px) {
+  .degree-inspector {
+    font-size: 14px;
+  }
+
+  /* Header */
+  .di-header {
+    padding: 12px 4% !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .di-header > div:first-child {
+    font-size: 18px !important;
+    flex-shrink: 0;
+  }
+
+  .di-header > div:last-child {
+    gap: 6px !important;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    font-size: 10px !important;
+  }
+
+  .di-header a {
+    font-size: 11px !important;
+  }
+
+  /* Main content */
+  .di-content {
+    width: 92% !important;
+    padding: 22px 0 28px !important;
+  }
+
+  .di-content h1 {
+    font-size: clamp(23px, 6.5vw, 30px) !important;
+    line-height: 1.45 !important;
+  }
+
+  .di-content h2 {
+    font-size: 17px !important;
+    line-height: 1.5 !important;
+  }
+
+  .di-content h3 {
+    font-size: 13px !important;
+  }
+
+  .di-section {
+    padding: 14px !important;
+    margin-bottom: 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .di-content p {
+    font-size: 12px !important;
+    line-height: 1.75 !important;
+  }
+
+  /* File import */
+  .di-import label {
+    min-height: 105px !important;
+    padding: 12px !important;
+    gap: 6px !important;
+  }
+
+  .di-import label strong {
+    font-size: 13px !important;
+  }
+
+  /* Summary cards: 2 columns */
+  .di-content > section[style*="grid-template-columns"] {
+    gap: 8px !important;
+  }
+
+  .di-content article {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .di-content article strong {
+    font-size: 22px !important;
+  }
+
+  /* Buttons */
+  .di-content button {
+    padding: 9px 11px !important;
+    font-size: 12px !important;
+    line-height: 1.5;
+  }
+
+  /* Search field */
+  .di-content input:not([type="file"]) {
+    max-width: 100%;
+    font-size: 16px !important;
+  }
+
+  /* Course tables remain horizontally scrollable */
+  .di-content table {
+    font-size: 11px;
+  }
+
+  /* Smaller spacing around course groups */
+  .di-content section section {
+    margin-bottom: 12px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .di-content {
+    width: 94% !important;
+  }
+
+  .di-section {
+    padding: 11px !important;
+  }
+
+  .di-content h1 {
+    font-size: 23px !important;
+  }
+
+  .di-header > div:last-child {
+    max-width: 62%;
+  }
+}
+
+@media (max-width: 600px) {
+  .di-credit-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .di-credit-grid article {
+    padding: 10px !important;
+    border-radius: 10px !important;
+  }
+
+  .di-credit-grid article > div:first-child {
+    min-height: 0 !important;
+    font-size: 11px !important;
+    line-height: 1.5;
+  }
+
+  .di-credit-grid article strong {
+    font-size: 18px !important;
+  }
+
+  .di-credit-grid article span {
+    font-size: 10px !important;
+  }
+
+  .di-credit-grid article > div:nth-child(2) {
+    flex-wrap: wrap;
+    gap: 3px !important;
+  }
+
+  .di-credit-grid article > div:last-child {
+    flex-wrap: wrap;
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 340px) {
+  .di-credit-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

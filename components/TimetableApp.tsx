@@ -1,6 +1,6 @@
 "use client";
 import { courses as reviewCourses } from "../data/lib/reviews";
-
+import CreditSimulator from "./credits/CreditSimulator";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -676,6 +676,12 @@ export default function TimetableApp({
         >
           履修口コミ
         </button>
+        <button
+          className={page === "calccalc" ? "active" : ""}
+          onClick={() => setPage("calccalc")}
+        >
+          単位計算ツール
+        </button>
       </nav>
 
       <div className="header-actions">
@@ -709,6 +715,19 @@ export default function TimetableApp({
                   科目ブロックをつかんで、好きなコマへドラッグ。
                 </p>
               </div>
+
+              <div className="header-actions">
+                <a href="https://aaaportal.tid.ac.jp/aa_web/portal/mt0010.aspx" className="back-button">
+                  ← AAAへ戻る
+                </a>
+              </div>
+
+              <div className="header-actions">
+                <a href="https://tidesiign-ai.github.io/calcweb/" className="back-button">
+                  ← 単位計算ツールへアクセスする！
+                </a>
+              </div>
+
               <span className="pill">自動保存 · このブラウザ内</span>
             </div>
 
@@ -1124,9 +1143,6 @@ export default function TimetableApp({
                   配置後もドラッグして移動できます。
                   昼休みには自作予定を配置できます。
                 </div>
-                <a href="https://tidesiign-ai.github.io/calcweb/">
-                  <button type="button">単位計算機 を開く</button>
-                </a>
               </aside>
             </div>
 
@@ -1147,8 +1163,8 @@ export default function TimetableApp({
                 ))}
             </div>
           </section>
-        ) : (
-          <section id="courses">
+          ) : page === "courses" ? (
+            <section id="courses">
             <div className="page-head">
               <div>
                 <div className="eyebrow">STUDENT REVIEWS</div>
@@ -1170,8 +1186,14 @@ export default function TimetableApp({
                 />
               ))}
             </div>
-          </section>
-        )}
+            </section>
+            ) : page === "calccalc" ? (
+              <CreditSimulator onBack={() => setPage("timetable")} />
+            ) : (
+              <section id="courses">
+                {/* 既存の口コミページの内容 */}
+              </section>
+            )}
 
         <footer className="footer">
           履修ナビ · 学生の科目選びをサポート
