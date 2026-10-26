@@ -351,9 +351,79 @@ export default function Home({ onBackAction }: HomeProps) {
       "mathRequired", "careerRequired", "vocationalRequired", "vocationalCore", "developmentRequired",
     ];
     const otherKeys: InputKey[] = ["comprehensive"];
+    const makeBasicElectiveTotalCard = () => {
+      const requiredCredits = 10;
+
+      const electiveKeys: InputKey[] = [
+        "mathElective",
+        "socialElective",
+        "careerElective",
+        "artElective",
+        "languageElective",
+      ];
+
+      const earnedCredits = electiveKeys.reduce(
+        (total, key) => total + num(earned[key]),
+        0,
+      );
+
+      const enrolledCredits = electiveKeys.reduce(
+        (total, key) => total + num(enrolled[key]),
+        0,
+      );
+
+      const hasData = electiveKeys.some(
+        (key) =>
+          earned[key].trim() !== "" ||
+          enrolled[key].trim() !== "",
+      );
+
+      const shortageCredits = Math.max(
+        0,
+        requiredCredits - earnedCredits,
+      );
+
+      return {
+        key: "basicElectiveTotal",
+        label: "基礎科目 選択合計",
+        group: "基礎科目",
+        requiredCredits,
+        earnedCredits,
+        enrolledCredits,
+        shortageCredits,
+        progressPercent: Math.min(
+          100,
+          (earnedCredits / requiredCredits) * 100,
+        ),
+        hasData,
+      };
+    };
 
     return {
-      selective: makeCards(INPUT_FIELDS.filter((field) => selectiveKeys.includes(field.key))),
+      selective: [
+        ...makeCards(
+          INPUT_FIELDS.filter((field) =>
+            [
+              "mathElective",
+              "socialElective",
+              "careerElective",
+              "artElective",
+              "languageElective",
+            ].includes(field.key),
+          ),
+        ),
+        makeBasicElectiveTotalCard(),
+        ...makeCards(
+          INPUT_FIELDS.filter(
+            (field) => field.key === "vocationalElective",
+          ),
+        ),
+        ...makeCards(
+          INPUT_FIELDS.filter(
+            (field) => field.key === "developmentElective",
+          ),
+        ),
+      ],
       mandatory: makeCards(INPUT_FIELDS.filter((field) => mandatoryKeys.includes(field.key))),
       other: makeCards(INPUT_FIELDS.filter((field) => otherKeys.includes(field.key))),
     };
