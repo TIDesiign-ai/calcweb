@@ -1,0 +1,18 @@
+[
+  {
+    "id": "over-credit-limit",
+    "name": "入れすぎ",
+    "description": "履修上限をオーバーして登録しようとした。",
+    "icon": "💀",
+    "rarity": "rare",
+    "trigger": "attempt_over_limit"
+  },
+  {
+    "id": "under-recommended-confirmed",
+    "name": "確認したからね？",
+    "description": "推奨単位数から大幅に少ない単位で登録した。後で痛い目見るよ？",
+    "icon": "💀",
+    "rarity": "rare",
+    "trigger": "register_under_recommended"
+  }
+]

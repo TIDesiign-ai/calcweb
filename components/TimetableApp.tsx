@@ -11,6 +11,10 @@ import GradeSelector from "./GradeSelector";
 import type { Grade } from "../data/lib/grade-theme";
 import recommendedCreditsData from "../data/lib/recommended-credits.json";
 
+import CreditLimitDialog from "./dialogs/CreditLimitDialog";
+import UnderRecommendedDialog from "./dialogs/UnderRecommendedDialog";
+
+import AchievementPanel from "./dp-content/AchievementPanel";
 
 import {
   getSelectableCourses,
@@ -20,6 +24,8 @@ import {
 import { courses as catalogCourses } from "../data/lib/courses";
 
 import TimetableTutorial from "./TimetableTutorial";
+
+import { unlockAchievementsByTrigger } from "../data/lib/dp-content/achievements";
 
 
 type ScheduleItem = {
@@ -39,6 +45,12 @@ type RecommendedCreditsConfig = {
 };
 
 type Theme = "light" | "dark";
+
+type RegistrationStatus =
+  | "editing"
+  | "checking"
+  | "registered"
+  | "error";
 
 const DAYS = ["月", "火", "水", "木", "金"];
 const PERIODS = ["1限", "2限", "3限", "4限", "5限"];
@@ -225,6 +237,57 @@ export default function TimetableApp({
   }, [schedule]);
 
 
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [registrationStatus, setRegistrationStatus] =
+    useState<RegistrationStatus>("editing");
+  useEffect(() => {
+    console.log("[履修ナビ] registrationStatus:", registrationStatus);
+  }, [registrationStatus]);
+
+  const [showUnderRecommendedDialog, setShowUnderRecommendedDialog] =
+    useState(false);
+
+  const [showCreditLimitDialog, setShowCreditLimitDialog] =
+    useState(false);
+
+  const completeRegistration = () => {
+    setRegistrationStatus("checking");
+    console.log("[履修ナビ] 登録処理開始:", "checking");
+
+    // 推奨単位数不足の警告を経て登録を確定した
+    // 上限オーバーの場合は、この実績を解除しない
+    if (
+      totalCredits <= CREDIT_LIMIT &&
+      recommendationAssessment?.level === "hard"
+    ) {
+      unlockAchievementsByTrigger("register_under_recommended");
+    }
+
+    setRegistrationStatus("registered");
+    console.log("[履修ナビ] 登録処理完了:", "registered");
+
+    setShowCreditLimitDialog(false);
+    setShowUnderRecommendedDialog(false);
+  };
+
+  const handleRegistration = () => {
+    // 履修上限オーバーで登録を試みた
+    if (totalCredits > CREDIT_LIMIT) {
+      unlockAchievementsByTrigger("attempt_over_limit");
+      setShowCreditLimitDialog(true);
+      return;
+    }
+
+    // 推奨単位数を大幅に下回っている
+    if (recommendationAssessment?.level === "hard") {
+      setShowUnderRecommendedDialog(true);
+      return;
+    }
+
+    completeRegistration();
+  };
+
+  const CREDIT_LIMIT = 24;
   const workload =
     totalCredits <= 12
       ? {
@@ -238,11 +301,17 @@ export default function TimetableApp({
             description: "課題や試験の日程を確認しておきましょう。",
             level: "moderate",
           }
-        : {
-            label: "きつい〜",
-            description: "[WARN] 課題・試験が重なる時期に注意しましょう。",
-            level: "hard",
-          };
+        : totalCredits <= CREDIT_LIMIT
+          ? {
+              label: "きつい〜",
+              description: "[WARN] 課題・試験が重なる時期に注意しましょう。",
+              level: "hard",
+            }
+          : {
+              label: "履修上限オーバー！",
+              description: "[ERROR] 履修上限を超えています。履修規定を確認してください。",
+              level: "harder",
+            };
   const [theme, setTheme] = useState<Theme>("light");
   const [ready, setReady] = useState(false);
   const [pendingCode, setPendingCode] = useState<string | null>(null);
@@ -260,7 +329,7 @@ export default function TimetableApp({
 
 
   // 単位数の目安（必要に応じて変更）
-  const CREDIT_LIMIT = 24;
+
 
   const [selectedGrade, setSelectedGrade] = useState<Grade>(1);
   const [selectedSemester, setSelectedSemester] =
@@ -839,6 +908,13 @@ export default function TimetableApp({
         </button>
       </nav>
 
+      <button
+        type="button"
+        onClick={() => setShowAchievements(true)}
+      >
+        🏆 実績
+      </button>
+
       <div className="header-actions">
         <button
           type="button"
@@ -883,7 +959,7 @@ export default function TimetableApp({
                 </a>
               </div>
 
-              <span className="pill">自動保存 · このブラウザ内</span>
+              {/*<span className="pill">自動保存 · このブラウザ内</span>*/}
             </div>
             <div>
               <h3>↓↓↓学年・学期を選択してください！↓↓↓</h3>
@@ -937,6 +1013,14 @@ export default function TimetableApp({
                         <span className="mobile-trash-label">削除</span>
                       </span>
                     </div>*/}
+                    <button
+                      className="registerButton"
+                      onClick={handleRegistration}
+                    >
+                      <span className="registerIcon">🚀</span>
+                      <span>時間割を登録する！</span>
+                      <span className="registerArrow">→</span>
+                    </button>
 
                     <button
                       className="action secondary"
@@ -1124,22 +1208,22 @@ export default function TimetableApp({
                       aria-valuenow={Math.min(totalCredits, CREDIT_LIMIT)}
                     >
                       <div
-                        className={`credit-progress-bar ${workload.level}`}
-                        style={{
-                          width: `${Math.min(100, (totalCredits / CREDIT_LIMIT) * 100)}%`,
-                        }}
-                      />
-                    </div>
+                          className={`credit-progress-bar ${workload.level}`}
+                          style={{
+                            width: `${Math.min(100, (totalCredits / CREDIT_LIMIT) * 100)}%`,
+                          }}
+                        />
+                      </div>
 
-                    <p
-                      className={`credit-description${
-                        totalCredits > CREDIT_LIMIT ? " credit-warning" : ""
-                      }`}
-                    >
-                      {totalCredits > CREDIT_LIMIT
-                        ? `[ERROR] 上限を${totalCredits - CREDIT_LIMIT}単位超えています。履修規定を確認してください。`
-                        : workload.description}
-                    </p>
+                      <p
+                        className={`credit-description ${workload.level}${
+                          totalCredits > CREDIT_LIMIT ? " credit-warning" : ""
+                        }`}
+                      >
+                        {totalCredits > CREDIT_LIMIT
+                          ? `[ERROR] 上限を${totalCredits - CREDIT_LIMIT}単位超えています。履修規定を確認してください。`
+                          : workload.description}
+                      </p>
                     <div className="credit-summary">
                       <div className="credit-number">
                         <strong>{recommendedCredits ?? "—"}</strong>
@@ -1472,6 +1556,28 @@ export default function TimetableApp({
           履修ナビ · 学生の科目選びをサポート
         </footer>
       </main>
+      {showAchievements && (
+        <AchievementPanel
+          onClose={() => setShowAchievements(false)}
+        />
+      )}
+
+      <CreditLimitDialog
+        open={showCreditLimitDialog}
+        totalCredits={totalCredits}
+        creditLimit={CREDIT_LIMIT}
+        onConfirm={completeRegistration}
+        onCancel={() => setShowCreditLimitDialog(false)}
+      />
+
+      <UnderRecommendedDialog
+        open={showUnderRecommendedDialog}
+        recommendedCredits={recommendedCredits ?? 0}
+        totalCredits={totalCredits}
+        creditDifference={creditDifference ?? 0}
+        onConfirm={completeRegistration}
+        onCancel={() => setShowUnderRecommendedDialog(false)}
+      />
 
 
       {toastMessage ? (

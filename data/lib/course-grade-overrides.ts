@@ -20,4 +20,8 @@ export const courseGradeOverrides: Record<
     grades: [1, 2],
     semesters: ["後期"],
   },
+  "999": {
+    grades: [1, 2],
+    semesters: ["前期"],
+  },
 };
