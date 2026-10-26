@@ -884,51 +884,6 @@ export default function TimetableApp({
                 </div>
 
                 <div className="grid-wrap">
-                  <div className={`credit-attention ${workload.level}`}>
-                    <div className="credit-attention-header">
-                      <div>
-                        <span className="credit-eyebrow">CREDIT CHECK</span>
-                        <h4>今学期の履修状況</h4>
-                      </div>
-
-                      <span className={`workload-badge ${workload.level}`}>
-                        {workload.label}
-                      </span>
-                    </div>
-
-                    <div className="credit-summary">
-                      <div className="credit-number">
-                        <strong>{totalCredits}</strong>
-                        <span> / {CREDIT_LIMIT} 単位</span>
-                      </div>
-
-                      <span className="credit-remaining">
-                        残り {Math.max(0, CREDIT_LIMIT - totalCredits)} 単位
-                      </span>
-                    </div>
-
-                    <div
-                      className="credit-progress"
-                      role="progressbar"
-                      aria-label="単位上限に対する履修状況"
-                      aria-valuemin={0}
-                      aria-valuemax={CREDIT_LIMIT}
-                      aria-valuenow={Math.min(totalCredits, CREDIT_LIMIT)}
-                    >
-                      <div
-                        className={`credit-progress-bar ${workload.level}`}
-                        style={{
-                          width: `${Math.min(100, (totalCredits / CREDIT_LIMIT) * 100)}%`,
-                        }}
-                      />
-                    </div>
-
-                    <p className="credit-description">
-                      {totalCredits > CREDIT_LIMIT
-                        ? `上限を${totalCredits - CREDIT_LIMIT}単位超えています。履修規定を確認してください。`
-                        : workload.description}
-                    </p>
-                  </div>
                   <div className="timetable">
                     <div />
                     {DAYS.map((day) => (
@@ -1072,6 +1027,51 @@ export default function TimetableApp({
                         })}
                       </div>
                     ))}
+                  </div>
+                  <div className={`credit-attention ${workload.level}`}>
+                    <div className="credit-attention-header">
+                      <div>
+                        <span className="credit-eyebrow">CREDIT CHECK</span>
+                        <h4>今学期の履修状況</h4>
+                      </div>
+
+                      <span className={`workload-badge ${workload.level}`}>
+                        {workload.label}
+                      </span>
+                    </div>
+
+                    <div className="credit-summary">
+                      <div className="credit-number">
+                        <strong>{totalCredits}</strong>
+                        <span> / {CREDIT_LIMIT} 単位</span>
+                      </div>
+
+                      <span className="credit-remaining">
+                        残り {Math.max(0, CREDIT_LIMIT - totalCredits)} 単位
+                      </span>
+                    </div>
+
+                    <div
+                      className="credit-progress"
+                      role="progressbar"
+                      aria-label="単位上限に対する履修状況"
+                      aria-valuemin={0}
+                      aria-valuemax={CREDIT_LIMIT}
+                      aria-valuenow={Math.min(totalCredits, CREDIT_LIMIT)}
+                    >
+                      <div
+                        className={`credit-progress-bar ${workload.level}`}
+                        style={{
+                          width: `${Math.min(100, (totalCredits / CREDIT_LIMIT) * 100)}%`,
+                        }}
+                      />
+                    </div>
+
+                    <p className="credit-description">
+                      {totalCredits > CREDIT_LIMIT
+                        ? `上限を${totalCredits - CREDIT_LIMIT}単位超えています。履修規定を確認してください。`
+                        : workload.description}
+                    </p>
                   </div>
                 </div>
               </section>
