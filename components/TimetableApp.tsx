@@ -748,6 +748,10 @@ export default function TimetableApp({
       : theme === "dark"
         ? "☾ ダーク"
         : "◐ 自動";
+  // 保存済みの設定を復元するまでは画面を表示しない
+  if (!ready || !selectionLoaded) {
+    return null;
+  }
 
   return (
     <div className="root" data-grade={selectedGrade}>

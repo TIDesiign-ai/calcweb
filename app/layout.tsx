@@ -7,6 +7,14 @@ export const metadata: Metadata = {
     "時間割を組みながら、先輩たちの授業レビューを確認できる履修登録支援サイト。",
 };
 
+const themeScript = `
+  try {
+    const saved = localStorage.getItem("course-nav-theme");
+    const theme = saved === "dark" ? "dark" : "light";
+    document.documentElement.dataset.theme = theme;
+  } catch {}
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -14,6 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>{children}</body>
     </html>
   );
