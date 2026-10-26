@@ -726,7 +726,7 @@ export default function Home({ onBackAction }: HomeProps) {
             </section>
           ))}
         </section>
-        {/*
+        {/*　単位数おまとめ表　AAAベース 実装時オミット
         <section className="di-section di-import" style={{ background: "", border: "1px solid var(--di-border)", borderRadius: 16, padding: 20, marginBottom: 22 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
             <div><div className="eyebrow">STEP 02</div><h2 style={{ fontSize: 20, margin: "5px 0 0" }}>単位データを確認・修正</h2></div>
