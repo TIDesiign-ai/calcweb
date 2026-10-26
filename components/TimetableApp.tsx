@@ -150,7 +150,7 @@ export default function TimetableApp({
   >("timetable");
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const totalCredits = useMemo(() => {
-    // 時間割に配置されている科目を、科目名で重複排除
+    // 科目名ごとに重複排除
     const uniqueCourses = new Map<string, number>();
 
     for (const item of schedule) {
@@ -158,7 +158,7 @@ export default function TimetableApp({
         ? item.code.slice("catalog:".length)
         : item.code;
 
-      const catalogCourse = catalogCourses.find(
+      const catalogCourseById = catalogCourses.find(
         (course) => course.id === catalogId,
       );
 
@@ -167,17 +167,46 @@ export default function TimetableApp({
       );
 
       const courseName =
-        catalogCourse?.course_name ?? reviewCourse?.name;
+        catalogCourseById?.course_name ?? reviewCourse?.name;
 
-      if (!courseName) continue;
+      if (!courseName) {
+        console.warn("科目名を取得できません:", item.code);
+        continue;
+      }
 
-      const credits = catalogCourse?.credits ?? 2;
+      // IDで見つからなければ、科目名でも検索
+      const catalogCourse =
+        catalogCourseById ??
+        catalogCourses.find(
+          (course) => course.course_name === courseName,
+        );
 
-      // 同じ科目名は1回だけ登録する
+      if (!catalogCourse) {
+        console.warn("シラバスに一致する科目がありません:", {
+          code: item.code,
+          courseName,
+        });
+        continue;
+      }
+
+      const credits = Number(catalogCourse.credits);
+
+      if (!Number.isFinite(credits)) {
+        console.warn("単位数が不正です:", catalogCourse);
+        continue;
+      }
+
       if (!uniqueCourses.has(courseName)) {
         uniqueCourses.set(courseName, credits);
       }
     }
+
+    console.table(
+      Array.from(uniqueCourses, ([courseName, credits]) => ({
+        courseName,
+        credits,
+      })),
+    );
 
     return Array.from(uniqueCourses.values()).reduce(
       (total, credits) => total + credits,
