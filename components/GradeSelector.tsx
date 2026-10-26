@@ -72,6 +72,8 @@ export default function GradeSelector({
           </button>
         ))}
       </div>
+      {/*履修モデル選択--プロト時はオミット。１１月～実装時に教学用UIと一緒に復活*/}
+      {/*
       <div className={styles.modelSelector}>
         <span className={styles.modelHeading}>↓↓↓履修モデルを選択してください↓↓↓</span>
 
@@ -91,6 +93,7 @@ export default function GradeSelector({
           ))}
         </div>
       </div>
+      */}
     </div>
   );
 }
