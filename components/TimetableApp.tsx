@@ -62,7 +62,7 @@ const CUSTOM_BLOCKS_KEY = "course-nav-custom-blocks";
 const EVENTS_KEY = "course-nav-events";
 const DEFAULT_EVENT_COLOR = "#8b7cf6";
 
-type CourseModelId = "SE" | "IoT" | "DS" | "CS" | "CG" | "DE";
+type CourseModelId = "SEコース" | "IoTコース" | "DSコース" | "CSコース" | "CGコース" | "DEコース";
 
 
 

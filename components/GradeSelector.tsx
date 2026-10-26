@@ -6,7 +6,7 @@ import type { Semester } from "../data/lib/course-selector";
 
 
 
-type CourseModelId = "SE" | "IoT" | "DS" | "CS" | "CG" | "DE";
+type CourseModelId = "SEコース" | "IoTコース" | "DSコース" | "CSコース" | "CGコース" | "DEコース";
 
 type Props = {
   value: Grade;
@@ -76,7 +76,7 @@ export default function GradeSelector({
         <span className={styles.modelHeading}>履修モデル</span>
 
         <div className={styles.modelGrid}>
-          {(["SE", "IoT", "DS", "CS", "CG", "DE"] as const).map((model) => (
+          {(["SEコース", "IoTコース", "DSコース", "CSコース", "CGコース", "DEコース"] as const).map((model) => (
             <button
               key={model}
               type="button"
