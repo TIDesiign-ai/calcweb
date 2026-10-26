@@ -149,6 +149,61 @@ export default function TimetableApp({
     "courses" | "timetable" | "calccalc"
   >("timetable");
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
+  const totalCredits = useMemo(() => {
+    // 時間割に配置されている科目を、科目名で重複排除
+    const uniqueCourses = new Map<string, number>();
+
+    for (const item of schedule) {
+      const catalogId = item.code.startsWith("catalog:")
+        ? item.code.slice("catalog:".length)
+        : item.code;
+
+      const catalogCourse = catalogCourses.find(
+        (course) => course.id === catalogId,
+      );
+
+      const reviewCourse = reviewCourses.find(
+        (course) => course.code === item.code,
+      );
+
+      const courseName =
+        catalogCourse?.course_name ?? reviewCourse?.name;
+
+      if (!courseName) continue;
+
+      const credits = catalogCourse?.credits ?? 2;
+
+      // 同じ科目名は1回だけ登録する
+      if (!uniqueCourses.has(courseName)) {
+        uniqueCourses.set(courseName, credits);
+      }
+    }
+
+    return Array.from(uniqueCourses.values()).reduce(
+      (total, credits) => total + credits,
+      0,
+    );
+  }, [schedule]);
+
+
+  const workload =
+    totalCredits <= 12
+      ? {
+          label: "楽！",
+          description: "比較的余裕を持って取り組めそうです。",
+          level: "easy",
+        }
+      : totalCredits <= 20
+        ? {
+            label: "ちょっと大変",
+            description: "課題や試験の日程を確認しておきましょう。",
+            level: "moderate",
+          }
+        : {
+            label: "きつい〜",
+            description: "課題・試験が重なる時期に注意しましょう。",
+            level: "hard",
+          };
   const [theme, setTheme] = useState<Theme>("light");
   const [ready, setReady] = useState(false);
   const [pendingCode, setPendingCode] = useState<string | null>(null);
@@ -164,6 +219,16 @@ export default function TimetableApp({
   const [selectedModel, setSelectedModel] =
     useState<CourseModelId | null>(null);
 
+
+  // 単位数の目安（必要に応じて変更）
+  const CREDIT_LIMIT = 24;
+  const CREDITS_PER_COURSE = 2;
+
+  // 履修負荷の目安
+  const LOAD_THRESHOLDS = {
+    easy: 12,
+    moderate: 18,
+  } as const;
 
   const totalReviews = useMemo(
     () =>
@@ -790,6 +855,51 @@ export default function TimetableApp({
                 </div>
 
                 <div className="grid-wrap">
+                  <div className={`credit-attention ${workload.level}`}>
+                    <div className="credit-attention-header">
+                      <div>
+                        <span className="credit-eyebrow">CREDIT CHECK</span>
+                        <h4>今学期の履修状況</h4>
+                      </div>
+
+                      <span className={`workload-badge ${workload.level}`}>
+                        {workload.label}
+                      </span>
+                    </div>
+
+                    <div className="credit-summary">
+                      <div className="credit-number">
+                        <strong>{totalCredits}</strong>
+                        <span> / {CREDIT_LIMIT} 単位</span>
+                      </div>
+
+                      <span className="credit-remaining">
+                        残り {Math.max(0, CREDIT_LIMIT - totalCredits)} 単位
+                      </span>
+                    </div>
+
+                    <div
+                      className="credit-progress"
+                      role="progressbar"
+                      aria-label="単位上限に対する履修状況"
+                      aria-valuemin={0}
+                      aria-valuemax={CREDIT_LIMIT}
+                      aria-valuenow={Math.min(totalCredits, CREDIT_LIMIT)}
+                    >
+                      <div
+                        className={`credit-progress-bar ${workload.level}`}
+                        style={{
+                          width: `${Math.min(100, (totalCredits / CREDIT_LIMIT) * 100)}%`,
+                        }}
+                      />
+                    </div>
+
+                    <p className="credit-description">
+                      {totalCredits > CREDIT_LIMIT
+                        ? `上限を${totalCredits - CREDIT_LIMIT}単位超えています。履修規定を確認してください。`
+                        : workload.description}
+                    </p>
+                  </div>
                   <div className="timetable">
                     <div />
                     {DAYS.map((day) => (

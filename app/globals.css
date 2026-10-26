@@ -1294,3 +1294,145 @@ body::-webkit-scrollbar {
 .back-button:hover {
   background: var(--hover-bg, #f3f4f6);
 }
+.credit-attention {
+  margin: 16px 0;
+  padding: 20px;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 18px;
+  background: var(--surface, #ffffff);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.credit-attention:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgb(0 0 0 / 8%);
+}
+
+.credit-attention.easy {
+  border-color: #86efac;
+}
+
+.credit-attention.moderate {
+  border-color: #fcd34d;
+}
+
+.credit-attention.hard {
+  border-color: #fb7185;
+}
+
+.credit-attention-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.credit-eyebrow {
+  color: var(--muted, #64748b);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.credit-attention-header h4 {
+  margin: 4px 0 0;
+  font-size: 1rem;
+}
+
+.workload-badge {
+  flex-shrink: 0;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  transition: transform 0.2s ease;
+}
+
+.credit-attention:hover .workload-badge {
+  transform: scale(1.08) rotate(-2deg);
+}
+
+.workload-badge.easy {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.workload-badge.moderate {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.workload-badge.hard {
+  color: #9f1239;
+  background: #ffe4e6;
+}
+
+.credit-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.credit-number strong {
+  font-size: 2rem;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.credit-number span,
+.credit-remaining {
+  color: var(--muted, #64748b);
+  font-size: 0.85rem;
+}
+
+.credit-progress {
+  height: 9px;
+  margin-top: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface2, #e2e8f0);
+}
+
+.credit-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.35s ease;
+}
+
+.credit-progress-bar.easy {
+  background: #22c55e;
+}
+
+.credit-progress-bar.moderate {
+  background: #f59e0b;
+}
+
+.credit-progress-bar.hard {
+  background: #f43f5e;
+}
+
+.credit-description {
+  margin: 12px 0 0;
+  color: var(--muted, #64748b);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 480px) {
+  .credit-attention {
+    padding: 15px;
+  }
+
+  .credit-number strong {
+    font-size: 1.65rem;
+  }
+
+  .credit-remaining {
+    font-size: 0.75rem;
+  }
+}
