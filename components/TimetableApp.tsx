@@ -1178,18 +1178,43 @@ export default function TimetableApp({
               </section>
 
               <aside className="panel side">
-                <h2>科目・予定ブロック</h2>
-                <span className="small-muted">
-                  ドラッグ、または選択して配置先をクリック
-                </span>
 
-                <div className="course-list">
+                <div
+                  className={`course-list${trashActive ? " trash-active" : ""}`}
+                  onDragOver={(event) => {
+                    event.preventDefault();
+                    event.dataTransfer.dropEffect = "move";
+                  }}
+                  onDragEnter={() => {
+                    if (dragging?.id) setTrashActive(true);
+                  }}
+                  onDragLeave={(event) => {
+                    if (
+                      !event.currentTarget.contains(
+                        event.relatedTarget as Node | null,
+                      )
+                    ) {
+                      setTrashActive(false);
+                    }
+                  }}
+                  onDrop={(event) => {
+                    if (!dragging?.id) return;
+
+                    onTrashDrop(event);
+                  }}
+                >
+
+                  <h2>科目・予定ブロック</h2>
+                  <span className="small-muted">
+                    ドラッグ、または選択して配置先をクリック
+                  </span>
                   {selectableCourses.length === 0 ? (
                     <p className="small-muted">
                       選択した学年・学期の科目はありません。
                     </p>
                   ) : (
                     selectableCourses.map((course) => {
+                      // 以下、既存の処理をそのまま残す
                       const reviewCourse = reviewCourses.find(
                         (item) => item.name === course.course_name,
                       );
