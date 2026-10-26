@@ -726,7 +726,7 @@ export default function Home({ onBackAction }: HomeProps) {
             </section>
           ))}
         </section>
-
+        {/*
         <section className="di-section di-import" style={{ background: "", border: "1px solid var(--di-border)", borderRadius: 16, padding: 20, marginBottom: 22 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
             <div><div className="eyebrow">STEP 02</div><h2 style={{ fontSize: 20, margin: "5px 0 0" }}>単位データを確認・修正</h2></div>
@@ -776,7 +776,7 @@ export default function Home({ onBackAction }: HomeProps) {
             </table>
           </div>
           <div style={{ marginTop: 12, color: "var(--di-text-muted)", fontSize: 11, lineHeight: 1.7 }}>※ 不足単位は「卒業要件 − 修得単位」で計算します。履修中の単位は不足単位から差し引かず、卒業までに追加で必要な目安にのみ反映します。</div>
-        </section>
+          </section>*/}
 
         <footer style={{ textAlign: "center", color: "var(--di-text-muted)", fontSize: 11, lineHeight: 1.8 }}>成績表DI — 卒業要件の確認を支援するシミュレーターです。<br />正式な卒業判定は学校の規定を確認してください。</footer>
       </div>
