@@ -911,7 +911,7 @@ export default function TimetableApp({
 
 
                   <div className="schedule-actions">
-                    <div
+                    {/*<div
                       className={`trash-dropzone${trashActive ? " active" : ""}`}
                       onDragOver={(event) => {
                         event.preventDefault();
@@ -936,7 +936,7 @@ export default function TimetableApp({
                         <span className="desktop-trash-label">削除エリア</span>
                         <span className="mobile-trash-label">削除</span>
                       </span>
-                    </div>
+                    </div>*/}
 
                     <button
                       className="action secondary"
