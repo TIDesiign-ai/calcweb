@@ -261,41 +261,22 @@ export default function TimetableApp({
 
   // 単位数の目安（必要に応じて変更）
   const CREDIT_LIMIT = 24;
-  const CREDITS_PER_COURSE = 2;
 
-  // 履修負荷の目安
-  const LOAD_THRESHOLDS = {
-    easy: 12,
-    moderate: 18,
-  } as const;
-
-  const totalReviews = useMemo(
-    () =>
-      courses.reduce((sum, course) => sum + course.reviews.length, 0),
-    [],
-  );
   const [selectedGrade, setSelectedGrade] = useState<Grade>(1);
-
-
-
-
   const [selectedSemester, setSelectedSemester] =
     useState<Semester>("前期");
 
+  // JSONから推奨単位数を取得
   const recommendedConfig = recommendedCreditsData;
 
-  useEffect(() => {
-    let cancelled = false;
+  const gradeKey =
+    String(selectedGrade) as keyof typeof recommendedCreditsData.recommendations;
 
+  const recommendationSemester =
+    selectedSemester.startsWith("前期") ? "前期" : "後期";
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
   const recommendedCredits =
-    recommendedConfig?.recommendations[String(selectedGrade)]?.[
-      selectedSemester
-    ];
+    recommendedConfig.recommendations[gradeKey]?.[recommendationSemester];
 
   const creditDifference =
     recommendedCredits == null
@@ -303,10 +284,9 @@ export default function TimetableApp({
       : totalCredits - recommendedCredits;
 
   const recommendationAssessment = (() => {
-    if (creditDifference === null || !recommendedConfig) {
+    if (creditDifference === null) {
       return null;
     }
-
     const { comfortableFrom, onTrackFrom, warningFrom } =
       recommendedConfig.evaluation;
 
