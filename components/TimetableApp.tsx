@@ -723,9 +723,6 @@ export default function TimetableApp({
               </div>
 
               <div className="header-actions">
-                <a href="https://tidesiign-ai.github.io/calcweb/" className="back-button">
-                  ← 単位計算ツールへアクセスする！
-                </a>
               </div>
 
               <span className="pill">自動保存 · このブラウザ内</span>
