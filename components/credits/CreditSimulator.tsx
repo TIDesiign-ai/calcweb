@@ -449,28 +449,6 @@ export default function Home({ onBackAction }: HomeProps) {
   return (
 
   <main className={styles.degreeInspector}>
-    <header className={styles.header}>
-      <div className={styles.logo}>
-        成績表<span className={styles.logoAccent}>DI</span>
-      </div>
-
-      <div className={styles.headerActions}>
-        <button
-          type="button"
-          onClick={onBackAction}
-          className={styles.button}
-        >
-          ← 戻る
-        </button>
-
-        <a
-          href="https://tid-schedulemaker.lolipop-now.app"
-          className={styles.backLink}
-        >
-          履修ナビに戻る！
-        </a>
-      </div>
-    </header>
 
       <div
         className="di-content"
@@ -478,13 +456,13 @@ export default function Home({ onBackAction }: HomeProps) {
         <section
           className="di-section di-import"
           style={{ marginBottom: 26 }}>
-          <div style={{ color: "var(--di-primary)", fontSize: 11, fontWeight: 800, letterSpacing: 2 }}>DEGREE INSPECTOR</div>
+          <div className="eyebrow">DEGREE INSPECTOR</div>
           <h1 style={{ fontSize: "clamp(27px, 4vw, 40px)", lineHeight: 1.35, margin: "10px 0" }}>卒業までの道のりを、<br />ひと目でわかるように。</h1>
           <p style={{ color: "var(--di-text-secondary)", lineHeight: 1.8, fontSize: 14, marginBottom: 0 }}>成績表のHTMLファイルを選ぶだけ。卒業要件・修得単位・履修単位を自動で読み取り、卒業までの単位状況を確認できます。</p>
         </section>
 
         <section className="di-section di-import" style={{ border: "1px solid #var(--di-border-strong)", borderRadius: 16, padding: 20, marginBottom: 22 }}>
-          <div style={{ color: "var(--di-primary)", fontSize: 11, fontWeight: 800 }}>STEP 01</div>
+          <div className="eyebrow">STEP 01</div>
           <h2 style={{ fontSize: 20, margin: "5px 0 8px" }}>成績表をインポート</h2>
           <p style={{ color: "var(--di-text-secondary)", fontSize: 13, lineHeight: 1.8, marginTop: 0 }}>Active Academyの成績表をHTMLファイル（.html / .htm）として保存し、ここから選択してください。ファイルはブラウザ内で解析し、サーバーには送信しません。</p>
           <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 150, border: "2px dashed var(--di-border-dashed)", borderRadius: 12, padding: 20, background: "var(--di-primary-tint)", cursor: "pointer", textAlign: "center" }}>
@@ -528,12 +506,12 @@ export default function Home({ onBackAction }: HomeProps) {
         </section>
 
         <section className="di-section di-import" style={{border: "1px solid var(--di-border)", borderRadius: 16, padding: 22, marginBottom: 22 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 12 }}><h2 style={{ fontSize: 20, margin: 0 }}>取得状況</h2><strong style={{ color: "var(--di-primary)" }}>{progress.toFixed(1)}%</strong></div>
-          <div style={{ height: 10, background: "var(--di-progress-track)", borderRadius: 20, overflow: "hidden", marginBottom: 24 }}><div style={{ width: `${progress}%`, height: "100%", background: "var(--di-primary)", borderRadius: 20, transition: "width .2s" }} /></div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 12 }}><h2 style={{ fontSize: 20, margin: 0 }}>取得状況</h2><strong style={{ color: "var(--grade-primary)" }}>{progress.toFixed(1)}%</strong></div>
+          <div style={{ height: 10, background: "var(--di-progress-track)", borderRadius: 20, overflow: "hidden", marginBottom: 24 }}><div style={{ width: `${progress}%`, height: "100%", background: "var(--grade-primary)", borderRadius: 20, transition: "width .2s" }} /></div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 22 }}>
             {categoryProgress.map((category) => {
               const ratio = category.required > 0 ? Math.min(100, category.earned / category.required * 100) : 0;
-              return <div key={category.key}><div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 8, fontSize: 12 }}><span>{category.label}</span><span style={{ whiteSpace: "nowrap", color: "var(--di-text-secondary)" }}><strong style={{ color: "var(--di-text)" }}>{category.earned}</strong> / {category.required}</span></div><div style={{ height: 6, background: "var(--di-progress-track)", borderRadius: 10, overflow: "hidden" }}><div style={{ width: `${ratio}%`, height: "100%", background: "var(--di-primary-soft)", borderRadius: 10 }} /></div>{category.enrolled > 0 && <div style={{ fontSize: 11, color: "var(--di-warning)", marginTop: 6 }}>履修中：{category.enrolled}単位</div>}</div>;
+              return <div key={category.key}><div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 8, fontSize: 12 }}><span>{category.label}</span><span style={{ whiteSpace: "nowrap", color: "var(--di-text-secondary)" }}><strong style={{ color: "var(--di-text)" }}>{category.earned}</strong> / {category.required}</span></div><div style={{ height: 6, background: "var(--di-progress-track)", borderRadius: 10, overflow: "hidden" }}><div style={{ width: `${ratio}%`, height: "100%", background: "var(--grade-primary)", borderRadius: 10 }} /></div>{category.enrolled > 0 && <div style={{ fontSize: 11, color: "var(--di-warning)", marginTop: 6 }}>履修中：{category.enrolled}単位</div>}</div>;
             })}
           </div>
         </section>
@@ -566,9 +544,9 @@ export default function Home({ onBackAction }: HomeProps) {
                 <div style={{ display: "flex", alignItems: "baseline", gap: 5, margin: "10px 0 9px" }}>
                   <strong style={{ fontSize: 25, color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--di-primary-strong)" }}>{card.hasData ? card.earnedCredits : "—"}</strong>
                   <span style={{ color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-text-on-danger)" : "var(--di-text-muted)", fontSize: 13 }}>/ {card.hasData ? card.requiredCredits : "—"} 単位</span>
-                  <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--di-primary)" }}>{card.hasData && card.requiredCredits > 0 ? `${card.progressPercent.toFixed(0)}%` : "—"}</span>
+                  <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--grade-primary)" }}>{card.hasData && card.requiredCredits > 0 ? `${card.progressPercent.toFixed(0)}%` : "—"}</span>
                 </div>
-                <div style={{ height: 7, background: showShortages && card.hasData && card.shortageCredits > 0 ? "rgba(255,255,255,.35)" : "var(--di-progress-track)", borderRadius: 20, overflow: "hidden" }}><div style={{ width: `${card.progressPercent}%`, height: "100%", background: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--di-primary-soft)", borderRadius: 20, transition: "width .2s" }} /></div>
+                <div style={{ height: 7, background: showShortages && card.hasData && card.shortageCredits > 0 ? "rgba(255,255,255,.35)" : "var(--di-progress-track)", borderRadius: 20, overflow: "hidden" }}><div style={{ width: `${card.progressPercent}%`, height: "100%", background: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--grade-primary)", borderRadius: 20, transition: "width .2s" }} /></div>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginTop: 12, fontSize: 12 }}>
                   <strong style={{ color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : card.shortageCredits > 0 ? "var(--di-warning)" : "var(--di-success)" }}>{card.hasData ? `不足：${card.shortageCredits}単位` : "不足：—"}</strong>
                   {card.enrolledCredits > 0 && <span style={{ color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-text-on-danger)" : "var(--di-warning)" }}>履修中：{card.enrolledCredits}</span>}
@@ -588,9 +566,9 @@ export default function Home({ onBackAction }: HomeProps) {
                 <div style={{ display: "flex", alignItems: "baseline", gap: 5, margin: "10px 0 9px" }}>
                   <strong style={{ fontSize: 25, color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--di-primary-strong)" }}>{card.hasData ? card.earnedCredits : "—"}</strong>
                   <span style={{ color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-text-on-danger)" : "var(--di-text-muted)", fontSize: 13 }}>/ {card.hasData ? card.requiredCredits : "—"} 単位</span>
-                  <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--di-primary)" }}>{card.hasData && card.requiredCredits > 0 ? `${card.progressPercent.toFixed(0)}%` : "—"}</span>
+                  <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--grade-primary)" }}>{card.hasData && card.requiredCredits > 0 ? `${card.progressPercent.toFixed(0)}%` : "—"}</span>
                 </div>
-                <div style={{ height: 7, background: showShortages && card.hasData && card.shortageCredits > 0 ? "rgba(255,255,255,.35)" : "var(--di-progress-track)", borderRadius: 20, overflow: "hidden" }}><div style={{ width: `${card.progressPercent}%`, height: "100%", background: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--di-primary-soft)", borderRadius: 20, transition: "width .2s" }} /></div>
+                <div style={{ height: 7, background: showShortages && card.hasData && card.shortageCredits > 0 ? "rgba(255,255,255,.35)" : "var(--di-progress-track)", borderRadius: 20, overflow: "hidden" }}><div style={{ width: `${card.progressPercent}%`, height: "100%", background: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--grade-primary)", borderRadius: 20, transition: "width .2s" }} /></div>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginTop: 12, fontSize: 12 }}>
                   <strong style={{ color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : card.shortageCredits > 0 ? "var(--di-warning)" : "var(--di-success)" }}>{card.hasData ? `不足：${card.shortageCredits}単位` : "不足：—"}</strong>
                   {card.enrolledCredits > 0 && <span style={{ color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-text-on-danger)" : "var(--di-warning)" }}>履修中：{card.enrolledCredits}</span>}
@@ -609,9 +587,9 @@ export default function Home({ onBackAction }: HomeProps) {
                 <div style={{ display: "flex", alignItems: "baseline", gap: 5, margin: "10px 0 9px" }}>
                   <strong style={{ fontSize: 25, color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--di-primary-strong)" }}>{card.hasData ? card.earnedCredits : "—"}</strong>
                   <span style={{ color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-text-on-danger)" : "var(--di-text-muted)", fontSize: 13 }}>/ {card.hasData ? card.requiredCredits : "—"} 単位</span>
-                  <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--di-primary)" }}>{card.hasData && card.requiredCredits > 0 ? `${card.progressPercent.toFixed(0)}%` : "—"}</span>
+                  <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--grade-primary)" }}>{card.hasData && card.requiredCredits > 0 ? `${card.progressPercent.toFixed(0)}%` : "—"}</span>
                 </div>
-                <div style={{ height: 7, background: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-text-danger-soft)" : "var(--di-progress-track)", borderRadius: 20, overflow: "hidden" }}><div style={{ width: `${card.progressPercent}%`, height: "100%", background: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--di-primary-soft)", borderRadius: 20 }} /></div>
+                <div style={{ height: 7, background: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-text-danger-soft)" : "var(--di-progress-track)", borderRadius: 20, overflow: "hidden" }}><div style={{ width: `${card.progressPercent}%`, height: "100%", background: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : "var(--grade-primary)", borderRadius: 20 }} /></div>
                 <div style={{ marginTop: 12, fontSize: 12 }}><strong style={{ color: showShortages && card.hasData && card.shortageCredits > 0 ? "var(--di-white)" : card.shortageCredits > 0 ? "var(--di-warning)" : "var(--di-success)" }}>{card.hasData ? `不足：${card.shortageCredits}単位` : "不足：—"}</strong></div>
               </article>
             ))}
@@ -624,7 +602,7 @@ export default function Home({ onBackAction }: HomeProps) {
               <h2 style={{ fontSize: 20, margin: 0 }}>これまでに修得した科目</h2>
               <p style={{ color: "var(--di-text-secondary)", fontSize: 12, lineHeight: 1.7, margin: "6px 0 0" }}>読み込んだ成績表の「修得成績」から科目を一覧表示します。</p>
             </div>
-            <strong style={{ color: "var(--di-primary)", whiteSpace: "nowrap" }}>{filteredEarnedCourses.length}科目・{filteredEarnedCourses.reduce((sum, course) => sum + course.credits, 0)}単位</strong>
+            <strong style={{ color: "var(--grade-primary)", whiteSpace: "nowrap" }}>{filteredEarnedCourses.length}科目・{filteredEarnedCourses.reduce((sum, course) => sum + course.credits, 0)}単位</strong>
           </div>
 
           {earnedCourses.length > 0 && (
@@ -681,7 +659,7 @@ export default function Home({ onBackAction }: HomeProps) {
 
         <section className="di-section di-import" style={{ background: "", border: "1px solid var(--di-border)", borderRadius: 16, padding: 20, marginBottom: 22 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
-            <div><div style={{ color: "var(--di-primary)", fontSize: 11, fontWeight: 800 }}>STEP 02</div><h2 style={{ fontSize: 20, margin: "5px 0 0" }}>単位データを確認・修正</h2></div>
+            <div><div className="eyebrow">STEP 02</div><h2 style={{ fontSize: 20, margin: "5px 0 0" }}>単位データを確認・修正</h2></div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               <button onClick={clearForm} style={buttonStyle}>すべてクリア</button>
               <button onClick={exportJson} style={buttonStyle}>JSONを書き出す ↓</button>
