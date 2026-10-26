@@ -9,6 +9,7 @@ import { courses } from "../data/lib/reviews";
 
 import GradeSelector from "./GradeSelector";
 import type { Grade } from "../data/lib/grade-theme";
+import recommendedCreditsData from "../data/lib/recommended-credits.json";
 
 
 import {
@@ -26,6 +27,15 @@ type ScheduleItem = {
   code: string;
   day: number;
   period: number;
+};
+
+type RecommendedCreditsConfig = {
+  recommendations: Record<string, Partial<Record<Semester, number>>>;
+  evaluation: {
+    comfortableFrom: number;
+    onTrackFrom: number;
+    warningFrom: number;
+  };
 };
 
 type Theme = "light" | "dark";
@@ -271,6 +281,73 @@ export default function TimetableApp({
 
   const [selectedSemester, setSelectedSemester] =
     useState<Semester>("前期");
+
+  const recommendedConfig = recommendedCreditsData;
+
+  useEffect(() => {
+    let cancelled = false;
+
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const recommendedCredits =
+    recommendedConfig?.recommendations[String(selectedGrade)]?.[
+      selectedSemester
+    ];
+
+  const creditDifference =
+    recommendedCredits == null
+      ? null
+      : totalCredits - recommendedCredits;
+
+  const recommendationAssessment = (() => {
+    if (creditDifference === null || !recommendedConfig) {
+      return null;
+    }
+
+    const { comfortableFrom, onTrackFrom, warningFrom } =
+      recommendedConfig.evaluation;
+
+    if (creditDifference >= comfortableFrom) {
+      return {
+        label: "＋ 余裕あり",
+        level: "easy",
+        description: "推奨単位数を上回っています。",
+      };
+    }
+
+    if (creditDifference >= onTrackFrom) {
+      return {
+        label: "＋ 順調",
+        level: "moderate",
+        description: "推奨単位数を少し上回っています。",
+      };
+    }
+
+    if (creditDifference === 0) {
+      return {
+        label: "± 推奨どおり",
+        level: "moderate",
+        description: "推奨単位数どおりの履修量です。",
+      };
+    }
+
+    if (creditDifference >= warningFrom) {
+      return {
+        label: "− やや注意",
+        level: "moderate",
+        description: "推奨より少なめです。今後の履修計画を確認しましょう。",
+      };
+    }
+
+    return {
+      label: "− 今後きつい可能性",
+      level: "hard",
+      description: "推奨よりかなり少なめです。卒業までの履修計画を確認しましょう。",
+    };
+  })();
 
   const [selectionLoaded, setSelectionLoaded] = useState(false);
 
@@ -1078,6 +1155,43 @@ export default function TimetableApp({
                       {totalCredits > CREDIT_LIMIT
                         ? `上限を${totalCredits - CREDIT_LIMIT}単位超えています。履修規定を確認してください。`
                         : workload.description}
+                    </p>
+                    <div className="credit-summary">
+                      <div className="credit-number">
+                        <strong>{recommendedCredits ?? "—"}</strong>
+                        <span> 推奨単位</span>
+                      </div>
+
+                      {recommendationAssessment && creditDifference !== null ? (
+                        <span className="credit-remaining">
+                          推奨との差{" "}
+                          {creditDifference > 0 ? "+" : ""}
+                          {creditDifference} 単位
+                        </span>
+                      ) : (
+                        <span className="credit-remaining">
+                          {recommendedConfig
+                            ? "この学期の推奨値は未設定です"
+                            : "推奨単位数を取得できません"}
+                        </span>
+                      )}
+                    </div>
+
+                    {recommendationAssessment && (
+                      <div
+                        className={`workload-badge ${recommendationAssessment.level}`}
+                        style={{
+                          display: "inline-flex",
+                          marginBottom: "12px",
+                        }}
+                      >
+                        {recommendationAssessment.label}
+                      </div>
+                    )}
+
+                    <p className="credit-description">
+                      {recommendationAssessment?.description ??
+                        "推奨単位数を取得できないため、評価できません。"}
                     </p>
                   </div>
                 </div>
