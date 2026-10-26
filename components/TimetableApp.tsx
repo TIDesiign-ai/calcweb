@@ -911,7 +911,7 @@ export default function TimetableApp({
 
 
                   <div className="schedule-actions">
-                    {/*<div
+                    {/*旧時間割削除エリア オミット<div
                       className={`trash-dropzone${trashActive ? " active" : ""}`}
                       onDragOver={(event) => {
                         event.preventDefault();
