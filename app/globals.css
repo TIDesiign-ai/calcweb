@@ -1465,3 +1465,15 @@ body::-webkit-scrollbar {
   font-weight: 700;
   text-align: center;
 }
+.credit-attention .recommendation-description.easy {
+  color: #16a34a !important;
+}
+
+.credit-attention .recommendation-description.moderate {
+  color: #d97706 !important;
+}
+
+.credit-attention .recommendation-description.hard {
+  color: #ef4444 !important;
+  font-weight: 700;
+}

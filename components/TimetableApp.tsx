@@ -240,7 +240,7 @@ export default function TimetableApp({
           }
         : {
             label: "きつい〜",
-            description: "課題・試験が重なる時期に注意しましょう。",
+            description: "[WARN] 課題・試験が重なる時期に注意しましょう。",
             level: "hard",
           };
   const [theme, setTheme] = useState<Theme>("light");
@@ -1131,9 +1131,13 @@ export default function TimetableApp({
                       />
                     </div>
 
-                    <p className="credit-description">
+                    <p
+                      className={`credit-description${
+                        totalCredits > CREDIT_LIMIT ? " credit-warning" : ""
+                      }`}
+                    >
                       {totalCredits > CREDIT_LIMIT
-                        ? `上限を${totalCredits - CREDIT_LIMIT}単位超えています。履修規定を確認してください。`
+                        ? `[ERROR] 上限を${totalCredits - CREDIT_LIMIT}単位超えています。履修規定を確認してください。`
                         : workload.description}
                     </p>
                     <div className="credit-summary">
@@ -1169,7 +1173,11 @@ export default function TimetableApp({
                       </div>
                     )}
 
-                    <p className="credit-description">
+                    <p
+                      className={`credit-description recommendation-description ${
+                        recommendationAssessment?.level ?? ""
+                      }`}
+                    >
                       {recommendationAssessment?.description ??
                         "推奨単位数を取得できないため、評価できません。"}
                     </p>
