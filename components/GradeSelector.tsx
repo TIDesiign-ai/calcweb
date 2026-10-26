@@ -73,7 +73,7 @@ export default function GradeSelector({
         ))}
       </div>
       <div className={styles.modelSelector}>
-        <span className={styles.modelHeading}>履修モデル</span>
+        <span className={styles.modelHeading}>↓↓↓履修モデルを選択してください↓↓↓</span>
 
         <div className={styles.modelGrid}>
           {(["SEコース", "IoTコース", "DSコース", "CSコース", "CGコース", "DEコース"] as const).map((model) => (

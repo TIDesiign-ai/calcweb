@@ -1,0 +1,15 @@
+
+{
+  "version": 1,
+  "recommendations": {
+    "1": { "前期": 20, "後期": 20 },
+    "2": { "前期": 20, "後期": 20 },
+    "3": { "前期": 18, "後期": 18 },
+    "4": { "前期": 12, "後期": 8 }
+  },
+  "evaluation": {
+    "comfortableFrom": 4,
+    "onTrackFrom": 1,
+    "warningFrom": -3
+  }
+}

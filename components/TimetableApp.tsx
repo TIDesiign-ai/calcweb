@@ -828,6 +828,9 @@ export default function TimetableApp({
 
               <span className="pill">自動保存 · このブラウザ内</span>
             </div>
+            <div>
+              <h3>↓↓↓学年・学期を選択してください！↓↓↓</h3>
+            </div>
 
             <div data-tour="grade-selector">
               <GradeSelector
