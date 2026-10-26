@@ -718,11 +718,14 @@ export default function TimetableApp({
 
               <div className="header-actions">
                 <a href="https://aaaportal.tid.ac.jp/aa_web/portal/mt0010.aspx" className="back-button">
-                  ← AAAへ戻る
+                  AAAへ戻る
                 </a>
               </div>
 
               <div className="header-actions">
+                <a href="https://aaaportal.tid.ac.jp/aa_web/portal/mt0010.aspx" className="back-button">
+                  履修登録ページに行く！
+                </a>
               </div>
 
               <span className="pill">自動保存 · このブラウザ内</span>
