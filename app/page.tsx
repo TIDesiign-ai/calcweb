@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./home.module.css";
+import TimetableSettingsModal from "../components/TimetableSettingsModal";
 
 const GRADES = ["1", "2", "3", "4"];
 const SEMESTERS = ["前期", "後期"];
@@ -87,13 +88,24 @@ export default function HomePage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [modalOpen]);
 
-  function openTimetable() {
-    localStorage.setItem("selectedGrade", grade);
-    localStorage.setItem("selectedSemester", semester);
-    localStorage.setItem("selectedCourse", course);
+  function openTimetable(settings: {
+    grade: string;
+    semester: string;
+    course: string;
+  }) {
+    localStorage.setItem("selectedGrade", settings.grade);
+    localStorage.setItem("selectedSemester", settings.semester);
+    localStorage.setItem("selectedCourse", settings.course);
 
+    setGrade(settings.grade);
+    setSemester(settings.semester);
+    setCourse(settings.course);
     setModalOpen(false);
-    router.push("/timetable");
+
+    const isMobile =
+      /Android|iPhone|iPod|Mobile/i.test(navigator.userAgent);
+
+    router.push(isMobile ? "/timetable/mobile" : "/timetable");
   }
 
   return (
@@ -192,107 +204,16 @@ export default function HomePage() {
       </footer>
 
       {modalOpen && (
-        <div
-          className={styles.modalOverlay}
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
-              setModalOpen(false);
-            }
-          }}
-        >
-          <section
-            className={styles.modal}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="settings-title"
-          >
-            <div className={styles.modalHeader}>
-              <div>
-                <p className={styles.eyebrow}>YOUR SETTINGS</p>
-                <h2 id="settings-title">時間割の設定</h2>
-              </div>
-
-              <button
-                type="button"
-                className={styles.modalClose}
-                aria-label="閉じる"
-                onClick={() => setModalOpen(false)}
-              >
-                ×
-              </button>
-            </div>
-
-            <p className={styles.modalDescription}>
-              時間割を作成するために、学習情報を入力してください。
-            </p>
-
-            <div className={styles.field}>
-              <label>学年</label>
-              <div className={styles.gradeGrid}>
-                {GRADES.map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className={`${styles.gradeButton} ${
-                      grade === value ? styles.active : ""
-                    }`}
-                    aria-pressed={grade === value}
-                    onClick={() => setGrade(value)}
-                  >
-                    <strong>{value}</strong>
-                    <span>年生</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.field}>
-              <label>学期</label>
-              <div className={styles.segmented}>
-                {SEMESTERS.map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className={semester === value ? styles.active : ""}
-                    aria-pressed={semester === value}
-                    onClick={() => setSemester(value)}
-                  >
-                    {value}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.field}>
-              <label htmlFor="course-select">コース</label>
-              <select
-                id="course-select"
-                value={course}
-                onChange={(event) => setCourse(event.target.value)}
-              >
-                {COURSES.map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              type="button"
-              className={styles.modalSubmit}
-              disabled={!loaded}
-              onClick={openTimetable}
-            >
-              時間割を開く
-              <span aria-hidden="true">→</span>
-            </button>
-
-            <p className={styles.modalNote}>
-              入力内容はこのブラウザに保存されます。
-            </p>
-          </section>
-        </div>
+        <TimetableSettingsModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSave={openTimetable}
+          styles={styles}
+          initialGrade={grade}
+          initialSemester={semester}
+          initialCourse={course}
+          submitLabel="時間割を開く"
+        />
       )}
     </main>
   );

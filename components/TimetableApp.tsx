@@ -2,6 +2,8 @@
 import { courses as reviewCourses } from "../data/lib/reviews";
 import CreditSimulator from "./credits/CreditSimulator";
 
+import { useRouter } from "next/navigation";
+
 import ShareQR from "./ShareQR";
 
 import Link from "next/link";
@@ -60,6 +62,7 @@ const DAYS = ["月", "火", "水", "木", "金"];
 const PERIODS = ["1限", "2限", "3限", "4限", "5限"];
 const SCHEDULE_KEY = "course-nav-schedule";
 const THEME_KEY = "course-nav-theme";
+
 
 
 const TIMETABLE_ROWS = [
@@ -166,14 +169,17 @@ function ReviewCard({ code }: { code: string }) {
 
 type TimetableAppProps = {
   initialPage?: "timetable" | "courses";
+  hideTimetable?: boolean;
 };
 
 export default function TimetableApp({
   initialPage = "timetable",
+  hideTimetable = false,
 }: TimetableAppProps) {
+  const router = useRouter();
   const [page, setPage] = useState<
     "courses" | "timetable" | "calccalc"
-  >("timetable");
+  >(hideTimetable ? "courses" : initialPage);
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const totalCredits = useMemo(() => {
     // 科目名ごとに重複排除
@@ -961,10 +967,18 @@ export default function TimetableApp({
       <nav className="nav" aria-label="メインメニュー">
         <button
           className={page === "timetable" ? "active" : ""}
-          onClick={() => setPage("timetable")}
+          onClick={() => {
+            if (hideTimetable) {
+              router.push("/timetable/mobile/timetable");
+            } else {
+              setPage("timetable");
+            }
+          }}
         >
           時間割ツール
         </button>
+
+
         <button
           className={page === "courses" ? "active" : ""}
           onClick={() => setPage("courses")}
@@ -1662,7 +1676,11 @@ export default function TimetableApp({
             </div>
             </section>
             ) : page === "calccalc" ? (
-              <CreditSimulator onBackAction={() => setPage("timetable")} />
+              <CreditSimulator
+                onBackAction={() =>
+                  setPage(hideTimetable ? "courses" : "timetable")
+                }
+              />
             ) : (
               <section id="courses">
                 {/* 既存の口コミページの内容 */}

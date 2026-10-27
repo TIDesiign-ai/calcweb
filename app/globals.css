@@ -2006,3 +2006,111 @@ body::-webkit-scrollbar {
     font-size: 12px;
   }
 }
+/* ===== 独自ボタン ===== */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.button:hover {
+  transform: translateY(-3px) scale(1.03);
+  border-color: var(--accent);
+  background: var(--hover-surface);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 12%);
+}
+
+.button:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+.button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* メインアクション */
+.buttonPrimary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.buttonPrimary:hover {
+  background: var(--accent);
+  filter: brightness(1.1);
+}
+
+/* 通常アクション */
+.buttonSecondary {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* 控えめなアクション */
+.buttonGhost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text);
+}
+
+/* 危険な操作 */
+.buttonDanger {
+  border-color: #dc3545;
+  background: #dc3545;
+  color: #fff;
+}
+
+/* 小さいボタン */
+.buttonSmall {
+  min-height: 34px;
+  padding: 6px 11px;
+  border-radius: 9px;
+  font-size: 12px;
+}
+
+/* 大きいボタン */
+.buttonLarge {
+  min-height: 52px;
+  padding: 13px 22px;
+  border-radius: 14px;
+  font-size: 15px;
+}
+
+/* 動きを抑える設定への配慮 */
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+
+  .button:hover,
+  .button:active {
+    transform: none;
+  }
+}
