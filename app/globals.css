@@ -1820,3 +1820,107 @@ body::-webkit-scrollbar {
   outline: 2px solid #c18b19;
   outline-offset: 3px;
 }
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+/* AAAへ戻る */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 20px;
+  border: 1px solid var(--border, #d8d8e2);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  color: var(--text, #292936);
+  font-size: 14px;
+  font-weight: 750;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.back-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 18px #00000016;
+}
+
+/* 履修ナビを友達に共有 */
+.shareButton {
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1px solid #ff8bb5;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #ff4d8d, #ff82b0);
+  color: white;
+  font-size: 14px;
+  font-weight: 850;
+  box-shadow: 0 5px 0 #d83270;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.shareButton:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 9px 0 #d83270, 0 12px 24px #ff4d8d40;
+}
+
+/* 履修登録ページ */
+.registration-button {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3px;
+  min-height: 54px;
+  padding: 10px 20px;
+  border: 1px solid #9cafff;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #526dff, #8294ff);
+  color: white;
+  font-size: 14px;
+  font-weight: 850;
+  text-decoration: none;
+  box-shadow: 0 5px 0 #3b50c9;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.registration-button span {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.registration-button:hover {
+  transform: translateY(-4px) scale(1.035);
+  box-shadow: 0 9px 0 #3b50c9, 0 12px 24px #526dff40;
+}
+
+.back-button:active,
+.shareButton:active,
+.registration-button:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 2px 0 #00000025;
+}
+
+@media (max-width: 600px) {
+  .header-actions {
+    gap: 12px;
+  }
+
+  .header-actions > * {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-button,
+  .shareButton,
+  .registration-button {
+    transition: none;
+  }
+}

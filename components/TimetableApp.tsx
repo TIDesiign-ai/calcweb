@@ -2,6 +2,8 @@
 import { courses as reviewCourses } from "../data/lib/reviews";
 import CreditSimulator from "./credits/CreditSimulator";
 
+import ShareQR from "./ShareQR";
+
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { DragEvent } from "react";
@@ -996,14 +998,23 @@ export default function TimetableApp({
               </div>
 
               <div className="header-actions">
-                <a href="https://aaaportal.tid.ac.jp/aa_web/portal/mt0010.aspx" className="back-button">
-                  AAAへ戻る
+                <a
+                  href="https://aaaportal.tid.ac.jp/aa_web/portal/mt0010.aspx"
+                  className="back-button"
+                >
+                  ↩ AAAへ戻る
                 </a>
-              </div>
 
-              <div className="header-actions">
-                <a href="https://aaaportal.tid.ac.jp/aa_web/portal/mt0010.aspx" className="back-button">
-                  履修登録ページに行く！
+                <ShareQR />
+
+                <a
+                  href="https://aaaportal.tid.ac.jp/aa_web/portal/mt0010.aspx"
+                  className="registration-button"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  📝 履修登録ページに行く！
+                  <span>公式ポータルを開く ↗</span>
                 </a>
               </div>
 
