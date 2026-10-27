@@ -2427,3 +2427,60 @@ body::-webkit-scrollbar {
     filter: none;
   }
 }
+
+/* ===== スマホ：時間割を画面幅に収める ===== */
+@media (max-width: 600px) {
+  .root {
+    padding: 6px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* 時間割の横スクロールをなくす */
+  .grid-wrap {
+    width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .timetable {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    grid-template-columns: 34px repeat(5, minmax(0, 1fr));
+  }
+
+  /* 曜日・時限の幅を圧縮 */
+  .timetable > * {
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* 科目名が長くても列を押し広げない */
+  .timetable button,
+  .timetable a,
+  .timetable [class*="slot"],
+  .timetable [class*="cell"] {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* マスの高さと余白をコンパクトに */
+  .timetable {
+    gap: 3px;
+  }
+
+  .timetable > * {
+    padding: 3px;
+    font-size: 11px;
+  }
+}
