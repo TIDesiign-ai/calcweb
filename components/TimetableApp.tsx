@@ -512,6 +512,28 @@ export default function TimetableApp({
   const [eventMemo, setEventMemo] = useState("");
   const [eventColor, setEventColor] = useState(DEFAULT_EVENT_COLOR);
 
+  const [courseSearch, setCourseSearch] = useState("");
+  const [courseCategoryFilter, setCourseCategoryFilter] = useState("すべて");
+
+  const courseCategories = [
+    "職業専門",
+    "基礎",
+    "展開科目",
+    "総合科目",
+  ];
+
+  const filteredCourses = selectableCourses.filter((course) => {
+    const matchesSearch = course.course_name
+      .toLowerCase()
+      .includes(courseSearch.trim().toLowerCase());
+
+    const matchesCategory =
+      courseCategoryFilter === "すべて" ||
+      course.course_category.includes(courseCategoryFilter);
+
+    return matchesSearch && matchesCategory;
+  });
+
   useEffect(() => {
     try {
       const storedBlocks = localStorage.getItem(CUSTOM_BLOCKS_KEY);
@@ -1021,7 +1043,7 @@ export default function TimetableApp({
               {/*<span className="pill">自動保存 · このブラウザ内</span>*/}
             </div>
             <div>
-              <h3>↓↓↓学年・学期を選択してください！↓↓↓</h3>
+              <h3>↓学年・学期を選択してください！↓</h3>
             </div>
 
             <div data-tour="grade-selector">
@@ -1359,12 +1381,48 @@ export default function TimetableApp({
                   <span className="small-muted">
                     ドラッグ、または選択して配置先をクリック
                   </span>
+
+                  <div className="course-filter">
+                    <input
+                      type="search"
+                      className="course-search"
+                      placeholder="🔍 科目名で検索..."
+                      value={courseSearch}
+                      onChange={(event) => setCourseSearch(event.target.value)}
+                      aria-label="科目名で検索"
+                    />
+
+                    <div className="course-category-filters">
+                      {["すべて", ...courseCategories].map((category) => (
+                        <button
+                          key={category}
+                          type="button"
+                          className={`course-filter-chip${
+                            courseCategoryFilter === category ? " active" : ""
+                          }`}
+                          aria-pressed={courseCategoryFilter === category}
+                          onClick={() => setCourseCategoryFilter(category)}
+                        >
+                          {category}
+                        </button>
+                      ))}
+                    </div>
+
+                    <p className="small-muted course-result-count">
+                      {filteredCourses.length} / {selectableCourses.length} 科目
+                    </p>
+                  </div>
+
                   {selectableCourses.length === 0 ? (
                     <p className="small-muted">
                       選択した学年・学期の科目はありません。
                     </p>
+                  ) : filteredCourses.length === 0 ? (
+                    <p className="small-muted">
+                      該当する科目がありません。検索語やカテゴリーを変更してください。
+                    </p>
                   ) : (
-                    selectableCourses.map((course) => {
+                    filteredCourses.map((course) => {
                       // 以下、既存の処理をそのまま残す
                       const reviewCourse = reviewCourses.find(
                         (item) => item.name === course.course_name,

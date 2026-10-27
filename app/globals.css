@@ -1925,562 +1925,84 @@ body::-webkit-scrollbar {
   }
 }
 
-/* =========================================
-   履修ナビ：モバイルUI改善パッチ
-   既存CSSの一番最後に追加
-   ========================================= */
-
-/* 横はみ出し・幅の制御 */
-.root {
-  width: 100%;
+/* 科目検索・カテゴリー絞り込み */
+.course-filter {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0;
   min-width: 0;
-  max-width: 100%;
-  padding: 0;
 }
 
-.root .main {
+.course-search {
   width: 100%;
-  max-width: 1240px;
   min-width: 0;
-  margin-inline: auto;
+  box-sizing: border-box;
+  padding: 11px 13px;
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  color: var(--text, #222);
+  font: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* ヘッダーの基本レイアウト */
-.root .topbar {
-  width: 100%;
-  height: auto;
-  min-height: 68px;
+.course-search:focus {
+  border-color: var(--accent, #64748b);
+  box-shadow: 0 0 0 3px rgb(100 116 139 / 15%);
+}
+
+.course-category-filters {
+  display: flex;
   flex-wrap: wrap;
-  gap: 12px 20px;
+  gap: 7px;
 }
 
-.root .brand {
-  flex-shrink: 0;
+.course-filter-chip {
+  padding: 7px 11px;
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  color: var(--text, #333);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    border-color 0.18s,
+    transform 0.18s;
 }
 
-.root .nav {
-  min-width: 0;
+.course-filter-chip:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent, #64748b);
 }
 
-.root .achievementButton {
-  white-space: nowrap;
+.course-filter-chip.active {
+  background: var(--accent, #334155);
+  color: white;
+  border-color: var(--accent, #334155);
+  font-weight: 700;
 }
 
-/* メイン領域の幅を適切に制限 */
-.root .workspace,
-.root .workspace > *,
-.root .page-head,
-.root .schedule-tools,
-.root .side {
-  min-width: 0;
-  max-width: 100%;
+.course-result-count {
+  margin: 0;
+  text-align: right;
+  font-size: 12px;
 }
 
-.root .workspace {
-  grid-template-columns: minmax(0, 1fr) 255px;
-}
-
-.root .schedule-actions {
-  flex-wrap: wrap;
-}
-
-.root .registerButton {
-  max-width: 100%;
-  white-space: normal;
-}
-
-/* 時間割は潰さず、横スクロールで操作 */
-.root .grid-wrap {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  padding: 12px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
-}
-
-.root .timetable {
-  width: 100%;
-  min-width: 650px;
-  grid-template-columns: 58px repeat(5, minmax(0, 1fr));
-  grid-template-rows: 36px repeat(5, minmax(100px, auto));
-  gap: 4px;
-}
-
-.root .course-block {
-  min-width: 0;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-}
-
-.root .course-block strong {
-  overflow-wrap: anywhere;
-}
-
-/* 科目一覧のカード */
-.root .course-list {
-  min-width: 0;
-}
-
-.root .course-choice {
-  min-width: 0;
-}
-
-.root .course-choice > span:last-child {
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-/* 単位状況 */
-.root .credit-attention {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.root .credit-attention-header,
-.root .credit-summary {
-  flex-wrap: wrap;
-}
-
-.root .credit-number {
-  min-width: 0;
-}
-
-.root .credit-remaining {
-  overflow-wrap: anywhere;
-}
-
-/* タブレット */
-@media (max-width: 900px) {
-  .root .main {
-    padding: 24px 18px 60px;
-  }
-
-  .root .workspace {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  /* 時間割を先に、科目一覧を後に表示 */
-  .root .workspace > .panel {
-    order: 0;
-  }
-
-  .root .workspace > .side {
-    order: 1;
-  }
-
-  .root .course-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .root .course-catalog {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* スマートフォン */
 @media (max-width: 600px) {
-  .root .topbar {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 12px;
-    padding: 12px 14px;
-  }
-
-  .root .brand {
-    grid-column: 1;
-    grid-row: 1;
-    gap: 8px;
-    font-size: 16px;
-  }
-
-  .root .logo {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-  }
-
-  .root .achievementButton {
-    grid-column: 2;
-    grid-row: 1;
-    padding: 8px 11px;
-    font-size: 12px;
-  }
-
-  .root .header-actions {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    display: flex;
-    justify-content: stretch;
-    gap: 8px;
-    width: 100%;
-  }
-
-  .root .header-actions > * {
-    flex: 1 1 0;
-    min-width: 0;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .root .nav {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 4px;
-    width: 100%;
-  }
-
-  .root .nav button {
-    min-width: 0;
-    padding: 10px 3px;
-    border-radius: 9px;
-    font-size: 11px;
-    line-height: 1.4;
-    white-space: normal;
-    overflow-wrap: anywhere;
-  }
-
-  .root .theme-btn,
-  .root .tutorial-launch-btn {
-    min-height: 38px;
-    padding: 8px 6px;
-    font-size: 12px;
-  }
-
-  .root .main {
-    padding: 22px 12px 90px;
-  }
-
-  .root .page-head {
-    align-items: stretch;
-    gap: 14px;
-    margin-bottom: 18px;
-  }
-
-  .root .page-head h1 {
-    font-size: clamp(24px, 6vw, 30px);
-    line-height: 1.35;
-    letter-spacing: -0.7px;
-  }
-
-  .root .page-head .header-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 9px;
-  }
-
-  .root .page-head .header-actions > * {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .root .back-button,
-  .root .shareButton {
-    padding: 10px 8px;
-    font-size: 12px;
-    text-align: center;
-  }
-
-  .root .registration-button {
-    grid-column: 1 / -1;
-    align-items: center;
-    min-height: 50px;
-    padding: 10px;
-    font-size: 13px;
-  }
-
-  .root .panel {
-    padding: 0;
-    border-radius: 14px;
-  }
-
-  .root .schedule-tools {
-    align-items: stretch;
-    padding: 14px 12px;
-    gap: 12px;
-  }
-
-  .root .schedule-tools h3 {
-    margin: 0;
-  }
-
-  .root .schedule-actions {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 8px;
-    width: 100%;
-  }
-
-  .root .registerButton {
-    grid-column: 1 / -1;
-    width: 100%;
-    min-height: 48px;
-    padding: 12px 10px;
-    gap: 8px;
-    font-size: 14px;
-    border-radius: 12px;
-  }
-
-  .root .schedule-actions > .action {
-    width: 100%;
-    min-width: 0;
-    min-height: 40px;
-    padding: 8px 5px;
-    white-space: normal;
-    font-size: 12px;
-  }
-
-  /* 時間割は小さく潰さず、指で横スクロール */
-  .root .grid-wrap {
-    padding: 8px;
-  }
-
-  .root .timetable {
-    min-width: 650px;
-    grid-template-columns: 52px repeat(5, minmax(110px, 1fr));
-    grid-template-rows: 34px repeat(5, 100px);
-    gap: 4px;
-  }
-
-  .root .day {
-    font-size: 14px;
-  }
-
-  .root .period {
-    font-size: 12px;
-    padding: 4px 2px;
-  }
-
-  .root .course-block {
-    inset: 3px;
-    padding: 5px;
-    gap: 4px;
-    border-radius: 7px;
-  }
-
-  .root .course-block strong {
-    font-size: 12px;
-    line-height: 1.35;
-  }
-
-  .root .course-block small {
-    font-size: 10px;
-    line-height: 1.35;
-  }
-
-  /* 科目選択は1列で読みやすく */
-  .root .side {
-    padding: 14px;
-  }
-
-  .root .course-list {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
+  .course-filter {
     gap: 8px;
   }
 
-  .root .course-choice {
-    padding: 12px;
-    gap: 10px;
-    border-radius: 12px;
-  }
-
-  .root .course-choice strong {
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  .root .course-choice small {
-    display: block;
-    margin-top: 3px;
-    font-size: 11px;
-  }
-
-  .root .custom-event-section {
-    margin-top: 20px;
-  }
-
-  .root .custom-event-heading {
-    align-items: center;
-  }
-
-  .root .custom-event-form {
-    padding: 12px;
-  }
-
-  .root .custom-event-form input[type="text"],
-  .root .custom-event-form textarea {
-    font-size: 16px;
-  }
-
-  /* 単位状況をスマホ向けに整理 */
-  .root .credit-attention {
-    margin: 10px 0 0;
-    padding: 14px;
-    border-radius: 12px;
-  }
-
-  .root .credit-attention-header {
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .root .workload-badge {
-    padding: 6px 9px;
-    font-size: 11px;
-    white-space: normal;
-  }
-
-  .root .credit-summary {
-    align-items: center;
-    gap: 6px;
-    margin-top: 14px;
-  }
-
-  .root .credit-number strong {
-    font-size: 1.7rem;
-  }
-
-  .root .credit-remaining {
-    font-size: 11px;
-  }
-
-  .root .credit-description {
-    font-size: 12px;
-    line-height: 1.7;
-  }
-
-  .root .course-catalog {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
-  }
-
-  .root .review-card {
-    padding: 15px;
-  }
-
-  .root .section-title {
-    font-size: 18px;
-    margin-top: 24px;
-  }
-
-  .root .footer {
-    padding-bottom: 12px;
-  }
-}
-
-/* 小型スマートフォン */
-@media (max-width: 380px) {
-  .root .main {
-    padding-right: 8px;
-    padding-left: 8px;
-  }
-
-  .root .topbar {
-    padding-right: 10px;
-    padding-left: 10px;
-  }
-
-  .root .brand {
-    font-size: 14px;
-  }
-
-  .root .achievementButton {
-    padding: 7px 8px;
-    font-size: 11px;
-  }
-
-  .root .nav button {
-    font-size: 10px;
-  }
-
-  .root .page-head h1 {
-    font-size: 23px;
-  }
-
-  .root .schedule-actions {
+  .course-category-filters {
     gap: 6px;
   }
 
-  .root .registerButton {
+  .course-filter-chip {
+    flex: 1 1 auto;
+    padding: 9px 8px;
     font-size: 12px;
-  }
-
-  .root .credit-number strong {
-    font-size: 1.5rem;
-  }
-}
-
-/* タッチ端末ではホバー時の浮き上がりを抑制 */
-@media (hover: none) {
-  .root .review-card:hover,
-  .root .registerButton:hover,
-  .root .back-button:hover,
-  .root .registration-button:hover {
-    transform: none;
-    filter: none;
-  }
-}
-
-/* ===== スマホ：時間割を画面幅に収める ===== */
-@media (max-width: 600px) {
-  .root {
-    padding: 6px;
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-  }
-
-  .workspace {
-    grid-template-columns: minmax(0, 1fr);
-    width: 100%;
-    min-width: 0;
-  }
-
-  /* 時間割の横スクロールをなくす */
-  .grid-wrap {
-    width: 100%;
-    min-width: 0;
-    overflow-x: hidden;
-  }
-
-  .timetable {
-    width: 100%;
-    min-width: 0;
-    table-layout: fixed;
-    grid-template-columns: 34px repeat(5, minmax(0, 1fr));
-  }
-
-  /* 曜日・時限の幅を圧縮 */
-  .timetable > * {
-    min-width: 0;
-    box-sizing: border-box;
-  }
-
-  /* 科目名が長くても列を押し広げない */
-  .timetable button,
-  .timetable a,
-  .timetable [class*="slot"],
-  .timetable [class*="cell"] {
-    min-width: 0;
-    max-width: 100%;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-
-  /* マスの高さと余白をコンパクトに */
-  .timetable {
-    gap: 3px;
-  }
-
-  .timetable > * {
-    padding: 3px;
-    font-size: 11px;
   }
 }
