@@ -1760,3 +1760,63 @@ body::-webkit-scrollbar {
   background: rgb(248 113 113 / 12%);
   border-left-color: #f87171;
 }
+.achievementButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border, #888);
+  border-radius: 12px;
+  background: var(--surface, var(--background, #fff));
+  color: var(--text, var(--foreground, #171717));
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.achievementButton:hover {
+  background: var(--surface2, var(--background, #eee));
+  border-color: #c18b19;
+  transform: translateY(-2px);
+}
+
+.achievementButton:focus-visible {
+  outline: 2px solid #c18b19;
+  outline-offset: 3px;
+}
+.achievementButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border, #888);
+  border-radius: 12px;
+  background: var(--surface, var(--background, #fff));
+  color: var(--text, var(--foreground, #171717));
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.achievementButton:hover {
+  background: var(--surface2, var(--background, #eee));
+  border-color: #c18b19;
+  transform: translateY(-2px);
+}
+
+.achievementButton:focus-visible {
+  outline: 2px solid #c18b19;
+  outline-offset: 3px;
+}

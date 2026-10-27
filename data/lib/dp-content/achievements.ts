@@ -2,7 +2,11 @@ import achievementData from "./achievements.json";
 
 export type AchievementTrigger =
   | "attempt_over_limit"
-  | "register_under_recommended";
+  | "register_under_recommended"
+  | "first_course_added"
+  | "full_credits"
+  | "fifth_period"
+  | "full_day_off";
 
 export type Achievement = {
   id: string;

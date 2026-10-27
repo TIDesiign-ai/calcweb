@@ -4,7 +4,7 @@
     "name": "入れすぎ",
     "description": "履修上限をオーバーして登録しようとした。",
     "icon": "💀",
-    "rarity": "rare",
+    "rarity": "legendary",
     "trigger": "attempt_over_limit"
   },
   {
@@ -14,5 +14,37 @@
     "icon": "💀",
     "rarity": "rare",
     "trigger": "register_under_recommended"
+  },
+  {
+    "id": "first-course-added",
+    "name": "時間割デビュー",
+    "description": "初めて授業を時間割に登録した",
+    "icon": "📅",
+    "rarity": "common",
+    "trigger": "first_course_added"
+  },
+  {
+    "id": "full-credits",
+    "name": "フル単……の予定",
+    "description": "履修登録単位数が24単位に到達した",
+    "icon": "📚",
+    "rarity": "epic",
+    "trigger": "full_credits"
+  },
+  {
+    "id": "fifth-period",
+    "name": "限界大学生",
+    "description": "5限まで授業がある曜日を作った",
+    "icon": "🔥",
+    "rarity": "epic",
+    "trigger": "fifth_period"
+  },
+  {
+    "id": "full-day-off",
+    "name": "カラ",
+    "description": "授業が1つもない曜日（全休）を作った",
+    "icon": "🛌",
+    "rarity": "epic",
+    "trigger": "full_day_off"
   }
 ]

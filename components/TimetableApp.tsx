@@ -27,6 +27,8 @@ import TimetableTutorial from "./TimetableTutorial";
 
 import { unlockAchievementsByTrigger } from "../data/lib/dp-content/achievements";
 
+import AchievementToast from "./dp-content/AchievementToast";
+import type { Achievement, AchievementTrigger } from "../data/lib/dp-content/achievements";
 
 type ScheduleItem = {
   id: string;
@@ -250,35 +252,18 @@ export default function TimetableApp({
   const [showCreditLimitDialog, setShowCreditLimitDialog] =
     useState(false);
 
-  const completeRegistration = () => {
-    setRegistrationStatus("checking");
-    console.log("[履修ナビ] 登録処理開始:", "checking");
+  const [ready, setReady] = useState(false);
 
-    // 推奨単位数不足の警告を経て登録を確定した
-    // 上限オーバーの場合は、この実績を解除しない
-    if (
-      totalCredits <= CREDIT_LIMIT &&
-      recommendationAssessment?.level === "hard"
-    ) {
-      unlockAchievementsByTrigger("register_under_recommended");
-    }
-
-    setRegistrationStatus("registered");
-    console.log("[履修ナビ] 登録処理完了:", "registered");
-
-    setShowCreditLimitDialog(false);
-    setShowUnderRecommendedDialog(false);
-  };
 
   const handleRegistration = () => {
-    // 履修上限オーバーで登録を試みた
+    unlockAndNotify("first_course_added");
+
     if (totalCredits > CREDIT_LIMIT) {
-      unlockAchievementsByTrigger("attempt_over_limit");
+      unlockAndNotify("attempt_over_limit");
       setShowCreditLimitDialog(true);
       return;
     }
 
-    // 推奨単位数を大幅に下回っている
     if (recommendationAssessment?.level === "hard") {
       setShowUnderRecommendedDialog(true);
       return;
@@ -287,6 +272,55 @@ export default function TimetableApp({
     completeRegistration();
   };
 
+  useEffect(() => {
+    if (!ready) return;
+
+    // 24単位に到達した
+    if (totalCredits >= CREDIT_LIMIT) {
+      unlockAndNotify("full_credits");
+    }
+
+    // 同じ曜日の1〜5限がすべて埋まっている
+    const hasFullDay = [0, 1, 2, 3, 4].some((day) => {
+      const periods = new Set(
+        schedule
+          .filter((item) => item.day === day)
+          .map((item) => item.period)
+      );
+
+      return [0, 1, 2, 3, 4].every((period) =>
+        periods.has(period)
+      );
+    });
+
+    if (hasFullDay) {
+      unlockAndNotify("fifth_period");
+    }
+  }, [ready, schedule, totalCredits]);
+
+  const completeRegistration = () => {
+    setRegistrationStatus("checking");
+
+    if (
+      totalCredits <= CREDIT_LIMIT &&
+      recommendationAssessment?.level === "hard"
+    ) {
+      unlockAndNotify("register_under_recommended");
+    }
+
+    // 全休の曜日があるか判定
+    const hasDayOff = [0, 1, 2, 3, 4].some((day) => {
+      return !schedule.some((item) => item.day === day);
+    });
+
+    if (hasDayOff) {
+      unlockAndNotify("full_day_off");
+    }
+
+    setRegistrationStatus("registered");
+    setShowCreditLimitDialog(false);
+    setShowUnderRecommendedDialog(false);
+  };
   const CREDIT_LIMIT = 24;
   const workload =
     totalCredits <= 12
@@ -313,7 +347,6 @@ export default function TimetableApp({
               level: "harder",
             };
   const [theme, setTheme] = useState<Theme>("light");
-  const [ready, setReady] = useState(false);
   const [pendingCode, setPendingCode] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState("");
   const [dragging, setDragging] = useState<{
@@ -401,6 +434,20 @@ export default function TimetableApp({
   const [selectionLoaded, setSelectionLoaded] = useState(false);
 
   const [tutorialOpen, setTutorialOpen] = useState(false);
+
+  const [newAchievements, setNewAchievements] = useState<Achievement[]>([]);
+
+  const unlockAndNotify = (trigger: AchievementTrigger) => {
+    const unlocked = unlockAchievementsByTrigger(trigger);
+
+    if (unlocked.length > 0) {
+      setNewAchievements((prev) => [...prev, ...unlocked]);
+    }
+  };
+
+  const dismissAchievementToast = () => {
+    setNewAchievements([]);
+  };
 
   // 前回の選択を復元
   useEffect(() => {
@@ -910,6 +957,7 @@ export default function TimetableApp({
 
       <button
         type="button"
+        className="achievementButton"
         onClick={() => setShowAchievements(true)}
       >
         🏆 実績
@@ -1585,6 +1633,10 @@ export default function TimetableApp({
           {toastMessage}
         </div>
       ) : null}
+      <AchievementToast
+        achievements={newAchievements}
+        onClose={dismissAchievementToast}
+      />
 
       <TimetableTutorial
         open={tutorialOpen}
