@@ -1055,7 +1055,7 @@ body {
   padding: 9px 14px;
   border: 1px solid #ff4d8d;
   border-radius: 999px;
-  background: #fff0f6;
+  background: surface2;
   color: #d9266b;
   font-weight: 700;
   cursor: pointer;
@@ -1064,7 +1064,7 @@ body {
 }
 
 .tutorial-launch-btn:hover {
-  background: #ffe0ec;
+  background: surface2;
   transform: translateY(-1px);
 }
 
