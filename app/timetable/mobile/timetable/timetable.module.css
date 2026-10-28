@@ -510,3 +510,36 @@
   min-height: 0;
   width: 100%;
 }
+.tagFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+}
+
+.tagButton,
+.tagActive {
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.tagButton {
+  background: var(--surface, #fff);
+  color: var(--text, #333);
+}
+
+.tagActive {
+  background: #ff4d8d;
+  border-color: #ff4d8d;
+  color: #fff;
+  font-weight: 700;
+}
+
+.tagButton:hover,
+.tagActive:hover {
+  transform: scale(1.05);
+}

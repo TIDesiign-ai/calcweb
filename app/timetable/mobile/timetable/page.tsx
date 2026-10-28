@@ -27,6 +27,7 @@
     name: string;
     color: string;
     textColor: string;
+    tag: string;
   };
 
   type DragState =
@@ -133,7 +134,7 @@
     const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState("")
     const [grade, setGrade] = useState("1");
     const [semester, setSemester] = useState<Semester>("前期");
     const [drag, setDrag] = useState<DragState | null>(null);
@@ -210,40 +211,42 @@
       return () => window.clearTimeout(timeout);
     }, [message]);
 
+
     const availableCourses = useMemo(() => {
-      return getSelectableCourses(Number(grade) as 1 | 2 | 3 | 4, semester)
-        .map((course) => {
+      return getSelectableCourses(
+        Number(grade) as 1 | 2 | 3 | 4,
+        semester
+      )
+        .map((item) => {
           const review = reviewCourses.find(
-            (item) => item.name === course.course_name,
+            (review) => review.name === item.course_name
           );
 
-          const code = review?.code ?? `catalog:${course.id}`;
+          const code = review?.code ?? `catalog:${item.id}`;
           const info = getCourseInfo(code);
 
           return {
-            id: course.id,
+            id: item.id,
             code,
-            name: course.course_name,
+            name: item.course_name,
             color: info?.color ?? "#64748b",
             textColor: info?.textColor ?? "#ffffff",
+            tag: item.course_category?.trim() || "未分類",
           } satisfies CourseOption;
         })
         .filter(
           (course, index, all) =>
-            all.findIndex((item) => item.code === course.code) === index,
+            all.findIndex((item) => item.code === course.code) === index
         );
     }, [grade, semester]);
 
     const availableTags = useMemo(() => {
-      const tags = availableCourses.flatMap((course) => {
-        const review = reviewCourses.find(
-          (item) => item.code === course.code
-        );
-
-        return review?.tags ?? [];
-      });
-
-      return ["すべて", ...Array.from(new Set(tags))];
+      return [
+        "すべて",
+        ...Array.from(
+          new Set(availableCourses.map((course) => course.tag))
+        ),
+      ];
     }, [availableCourses]);
 
     const filteredCourses = useMemo(() => {
@@ -251,13 +254,9 @@
         return availableCourses;
       }
 
-      return availableCourses.filter((course) => {
-        const review = reviewCourses.find(
-          (item) => item.code === course.code
-        );
-
-        return review?.tags?.includes(selectedTag) ?? false;
-      });
+      return availableCourses.filter(
+        (course) => course.tag === selectedTag
+      );
     }, [availableCourses, selectedTag]);
 
     const notify = useCallback((text: string) => {
