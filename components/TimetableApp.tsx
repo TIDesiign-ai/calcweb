@@ -2,6 +2,8 @@
 import { courses as reviewCourses } from "../data/lib/reviews";
 import CreditSimulator from "./credits/CreditSimulator";
 
+import PromptGenerator from "./promptmaker/PromptGenerateor";
+
 import { useRouter } from "next/navigation";
 
 import ShareQR from "./ShareQR";
@@ -178,7 +180,7 @@ export default function TimetableApp({
 }: TimetableAppProps) {
   const router = useRouter();
   const [page, setPage] = useState<
-    "courses" | "timetable" | "calccalc"
+    "courses" | "timetable" | "calccalc"| "prompt"
   >(hideTimetable ? "courses" : initialPage);
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const totalCredits = useMemo(() => {
@@ -978,21 +980,28 @@ export default function TimetableApp({
             }
           }}
         >
-          時間割ツール
+          📅時間割ツール
         </button>
 
         <button
           className={page === "courses" ? "active" : ""}
           onClick={() => setPage("courses")}
         >
-          履修口コミ
+          ✏️履修口コミ
         </button>
 
         <button
           className={page === "calccalc" ? "active" : ""}
           onClick={() => setPage("calccalc")}
         >
-          単位計算ツール
+          🔢単位計算ツール
+        </button>
+
+        <button
+          className={page === "prompt" ? "active" : ""}
+          onClick={() => setPage("prompt")}
+        >
+          ✨ AIプロンプト
         </button>
       </nav>
 
@@ -1690,6 +1699,8 @@ export default function TimetableApp({
                   setPage(hideTimetable ? "courses" : "timetable")
                 }
               />
+            ) : page === "prompt" ? (
+              <PromptGenerator />
             ) : (
               <section id="courses">
                 {/* 既存の口コミページの内容 */}

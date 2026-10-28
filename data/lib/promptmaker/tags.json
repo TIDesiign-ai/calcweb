@@ -1,0 +1,34 @@
+
+{
+  "categories": [
+    {
+      "id": "interests",
+      "label": "興味のある分野",
+      "tags": [
+        { "id": "ai-ml", "label": "AI・機械学習" },
+        { "id": "game-dev", "label": "ゲーム開発" },
+        { "id": "web-dev", "label": "Web開発" },
+        { "id": "app-dev", "label": "アプリ開発" },
+        { "id": "design", "label": "デザイン" },
+        { "id": "research", "label": "研究" },
+        { "id": "education", "label": "教育" },
+        { "id": "data-analysis", "label": "データ分析" },
+        { "id": "network", "label": "ネットワーク" }
+      ]
+    },
+    {
+      "id": "semester-style",
+      "label": "この学期の過ごし方",
+      "tags": [
+        { "id": "development-time", "label": "開発時間を確保したい" },
+        { "id": "high-grades", "label": "高成績を狙いたい" },
+        { "id": "easy-workload", "label": "課題の負担を抑えたい" },
+        { "id": "practical-skills", "label": "実践的なスキルを身につけたい" },
+        { "id": "qualification", "label": "資格取得を優先したい" },
+        { "id": "broad-learning", "label": "幅広い分野を学びたい" },
+        { "id": "specialization", "label": "専門性を深めたい" },
+        { "id": "career", "label": "就職を意識したい" }
+      ]
+    }
+  ]
+}
