@@ -958,12 +958,15 @@ export default function TimetableApp({
 
   return (
     <div className="root" data-grade={selectedGrade}>
+
     <header className="topbar">
+      {/* 左：ブランド */}
       <Link href="/" className="brand" aria-label="履修ナビ トップ">
         <span className="logo">履</span>
         <span>履修ナビ</span>
       </Link>
 
+      {/* 中央：メインナビゲーション */}
       <nav className="nav" aria-label="メインメニュー">
         <button
           className={page === "timetable" ? "active" : ""}
@@ -978,13 +981,13 @@ export default function TimetableApp({
           時間割ツール
         </button>
 
-
         <button
           className={page === "courses" ? "active" : ""}
           onClick={() => setPage("courses")}
         >
           履修口コミ
         </button>
+
         <button
           className={page === "calccalc" ? "active" : ""}
           onClick={() => setPage("calccalc")}
@@ -993,15 +996,16 @@ export default function TimetableApp({
         </button>
       </nav>
 
-      <button
-        type="button"
-        className="achievementButton"
-        onClick={() => setShowAchievements(true)}
-      >
-        🏆 実績
-      </button>
+      {/* 右：ユーティリティ */}
+      <div className="topbar-utilities">
+        <button
+          type="button"
+          className="achievementButton"
+          onClick={() => setShowAchievements(true)}
+        >
+          🏆 実績
+        </button>
 
-      <div className="header-actions">
         <button
           type="button"
           className="tutorial-launch-btn"
@@ -1015,11 +1019,16 @@ export default function TimetableApp({
           使い方
         </button>
 
-        <button className="theme-btn" onClick={changeTheme}>
+        <button
+          type="button"
+          className="theme-btn"
+          onClick={changeTheme}
+        >
           {themeLabel}
         </button>
       </div>
     </header>
+
 
       <main className="main">
         {page === "timetable" ? (
