@@ -1,6 +1,6 @@
   "use client";
 
-  import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+  import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
   import { useRouter } from "next/navigation";
 
   import TimetableSettingsModal from "../../../../components/TimetableSettingsModal";
@@ -30,6 +30,15 @@
     tag: string;
   };
 
+  type ScheduleEvent = {
+    id: string;
+    title: string;
+    day: number;
+    period: number;
+    color: string;
+    memo: string;
+  };
+
   type DragState =
     | {
         kind: "new";
@@ -49,8 +58,18 @@
         textColor: string;
         x: number;
         y: number;
+      }
+    | {
+        kind: "event";
+        id: string;
+        name: string;
+        color: string;
+        textColor: string;
+        x: number;
+        y: number;
       };
   const SCHEDULE_KEY = "course-nav-schedule";
+  const EVENTS_KEY = "course-nav-events";
   const TRASH_WIDTH = 24;
   const SWIPE_THRESHOLD = 5;
   const DAYS = ["月", "火", "水", "木", "金"];
@@ -122,6 +141,34 @@
     }
   }
 
+  function loadEvents(): ScheduleEvent[] {
+    try {
+      const saved = localStorage.getItem(EVENTS_KEY);
+      if (!saved) return [];
+
+      const parsed: unknown = JSON.parse(saved);
+      if (!Array.isArray(parsed)) return [];
+
+      return parsed.filter(
+        (item): item is ScheduleEvent =>
+          item !== null &&
+          typeof item === "object" &&
+          typeof item.id === "string" &&
+          typeof item.title === "string" &&
+          Number.isInteger(item.day) &&
+          item.day >= 0 &&
+          item.day < 5 &&
+          Number.isInteger(item.period) &&
+          item.period >= 0 &&
+          item.period < 5 &&
+          typeof item.color === "string" &&
+          typeof item.memo === "string",
+      );
+    } catch {
+      return [];
+    }
+  }
+
   export default function MobileTimetablePage() {
     const router = useRouter();
     const gridRef = useRef<HTMLDivElement>(null);
@@ -132,8 +179,15 @@
     const drawerRef = useRef<HTMLElement | null>(null);
 
     const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
+    const [events, setEvents] = useState<ScheduleEvent[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [eventModalOpen, setEventModalOpen] = useState(false);
+    const [eventTitle, setEventTitle] = useState("");
+    const [eventDay, setEventDay] = useState("0");
+    const [eventPeriod, setEventPeriod] = useState("0");
+    const [eventColor, setEventColor] = useState("#ff4d8d");
+    const [eventMemo, setEventMemo] = useState("");
     const [search, setSearch] = useState("")
     const [grade, setGrade] = useState("1");
     const [semester, setSemester] = useState<Semester>("前期");
@@ -149,6 +203,7 @@
 
     useEffect(() => {
       setSchedule(loadSchedule());
+      setEvents(loadEvents());
 
       const savedGrade = localStorage.getItem("selectedGrade");
       const savedSemester = localStorage.getItem("selectedSemester");
@@ -182,6 +237,10 @@
           setSchedule(loadSchedule());
         }
 
+        if (event.key === EVENTS_KEY) {
+          setEvents(loadEvents());
+        }
+
         if (event.key === "selectedGrade" && event.newValue) {
           setGrade(event.newValue);
         }
@@ -203,6 +262,12 @@
 
       localStorage.setItem(SCHEDULE_KEY, JSON.stringify(schedule));
     }, [schedule, loaded]);
+
+    useEffect(() => {
+      if (!loaded) return;
+
+      localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+    }, [events, loaded]);
 
     useEffect(() => {
       if (!message) return;
@@ -286,6 +351,31 @@
       notify(`${nextGrade}年・${nextSemester}に変更しました`);
     };
 
+    const createEvent = (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      const title = eventTitle.trim();
+      if (!title) {
+        notify("予定名を入力してください");
+        return;
+      }
+
+      const nextEvent: ScheduleEvent = {
+        id: makeId(),
+        title,
+        day: Number(eventDay),
+        period: Number(eventPeriod),
+        color: eventColor,
+        memo: eventMemo.trim(),
+      };
+
+      setEvents((items) => [...items, nextEvent]);
+      setEventTitle("");
+      setEventMemo("");
+      setEventModalOpen(false);
+      notify(`${title} を予定に追加しました`);
+    };
+
     const beginDrag = (
       item: Omit<Extract<DragState, { kind: "new" }>, "x" | "y">,
       x: number,
@@ -312,6 +402,26 @@
         name: info.name,
         color: info.color,
         textColor: info.textColor,
+        x,
+        y,
+      };
+
+      dragRef.current = next;
+      movedRef.current = false;
+      setDrag(next);
+    };
+
+    const beginEventDrag = (
+      item: ScheduleEvent,
+      x: number,
+      y: number,
+    ) => {
+      const next: DragState = {
+        kind: "event",
+        id: item.id,
+        name: item.title,
+        color: item.color,
+        textColor: "#ffffff",
         x,
         y,
       };
@@ -348,13 +458,12 @@
           }
         }
 
-        // 既存ブロックを削除エリアに持っていったら強調表示
+        // 授業または予定を削除エリアに持っていったら強調表示
         setTrashActive(
-          next.kind === "existing" &&
+          (next.kind === "existing" || next.kind === "event") &&
             event.clientX >= window.innerWidth - TRASH_WIDTH,
         );
       };
-
 
       const onUp = (event: PointerEvent) => {
         const current = dragRef.current;
@@ -362,79 +471,72 @@
 
         const x = event.clientX;
         const y = event.clientY;
+        const canDelete = current.kind === "existing" || current.kind === "event";
 
-        if (
-          current.kind === "existing" &&
-          x >= window.innerWidth - TRASH_WIDTH
-        ) {
-          setSchedule((items) =>
-            items.filter((item) => item.id !== current.id),
-          );
+        if (canDelete && x >= window.innerWidth - TRASH_WIDTH) {
+          if (current.kind === "event") {
+            setEvents((items) => items.filter((item) => item.id !== current.id));
+          } else {
+            setSchedule((items) => items.filter((item) => item.id !== current.id));
+          }
           notify(`${current.name} を削除しました`);
         } else {
           const grid = gridRef.current;
           const rect = grid?.getBoundingClientRect();
 
-          if (rect && x >= rect.left && x <= rect.right &&
-            y >= rect.top && y <= rect.bottom) {
+          if (
+            rect &&
+            x >= rect.left && x <= rect.right &&
+            y >= rect.top && y <= rect.bottom
+          ) {
             const headerHeight = 34;
             const relativeX = x - rect.left;
             const relativeY = y - rect.top;
-
             const columnWidth = rect.width / 6;
             const column = Math.floor(relativeX / columnWidth);
             const periodHeight = (rect.height - headerHeight) / 5;
-            const period = Math.floor(
-              (relativeY - headerHeight) / periodHeight,
-            );
+            const period = Math.floor((relativeY - headerHeight) / periodHeight);
             const day = column - 1;
 
-            if (
-              day >= 0 &&
-              day < 5 &&
-              period >= 0 &&
-              period < 5
-            ) {
-              setSchedule((items) => {
-                const existing = items.find(
-                  (item) =>
-                    item.day === day &&
-                    item.period === period &&
-                    item.id !==
-                      (current.kind === "existing" ? current.id : ""),
+            if (day >= 0 && day < 5 && period >= 0 && period < 5) {
+              if (current.kind === "event") {
+                setEvents((items) =>
+                  items.map((item) =>
+                    item.id === current.id ? { ...item, day, period } : item,
+                  ),
                 );
-
-                if (existing) {
-                  notify("そのコマにはすでに科目があります");
-                  return items;
-                }
-
-                if (current.kind === "existing") {
+                if (movedRef.current) {
                   notify(`${current.name} を移動しました`);
-
-                  return items.map((item) =>
-                    item.id === current.id
-                      ? { ...item, day, period }
-                      : item,
-                  );
                 }
+              } else {
+                setSchedule((items) => {
+                  const existing = items.find(
+                    (item) =>
+                      item.day === day &&
+                      item.period === period &&
+                      item.id !== (current.kind === "existing" ? current.id : ""),
+                  );
 
-                notify(`${current.name} を配置しました`);
+                  if (existing) {
+                    notify("そのコマにはすでに科目があります");
+                    return items;
+                  }
 
-                return [
-                  ...items,
-                  {
-                    id: makeId(),
-                    code: current.code,
-                    day,
-                    period,
-                  },
-                ];
-              });
+                  if (current.kind === "existing") {
+                    notify(`${current.name} を移動しました`);
+                    return items.map((item) =>
+                      item.id === current.id ? { ...item, day, period } : item,
+                    );
+                  }
 
-              if (current.kind === "new") {
-                setDrawerOpen(false);
-                setSearch("");
+                  notify(`${current.name} を配置しました`);
+                  return [...items, { id: makeId(), code: current.code, day, period }];
+                });
+
+                if (current.kind === "new") {
+                  setDrawerOpen(false);
+                  setSearch("");
+                }
               }
             }
           }
@@ -498,6 +600,17 @@
             科目 ＋
           </button>
         </header>
+
+        <button
+          type="button"
+          className={styles.eventFab}
+          onClick={() => setEventModalOpen(true)}
+          aria-label="予定を作成する"
+        >
+          <span aria-hidden="true">＋</span>
+          予定作成
+        </button>
+
         <div className={styles.timetableLayout}>
           <div className={styles.grid} ref={gridRef}>
             <div className={styles.corner}>時限</div>
@@ -523,6 +636,11 @@
                   );
 
                   const info = item ? getCourseInfo(item.code) : undefined;
+                  const eventItems = events.filter(
+                    (entry) =>
+                      entry.day === dayIndex &&
+                      entry.period === periodIndex,
+                  );
                   const isDragging = item && drag?.kind === "existing" &&
                     drag.id === item.id;
 
@@ -554,6 +672,41 @@
                           {info.name}
                         </button>
                       )}
+                      {eventItems.map((eventItem) => (
+                        <button
+                          key={eventItem.id}
+                          type="button"
+                          className={`${styles.eventBlock} ${
+                            drag?.kind === "event" && drag.id === eventItem.id
+                              ? styles.dragging
+                              : ""
+                          }`}
+                          style={{ background: eventItem.color, touchAction: "none" }}
+                          title={eventItem.memo || eventItem.title}
+                          onPointerDown={(pointerEvent) => {
+                            pointerEvent.preventDefault();
+                            pointerEvent.stopPropagation();
+                            beginEventDrag(eventItem, pointerEvent.clientX, pointerEvent.clientY);
+                          }}
+                          onClick={(clickEvent) => {
+                            if (movedRef.current) {
+                              clickEvent.preventDefault();
+                              clickEvent.stopPropagation();
+                              return;
+                            }
+                            if (window.confirm(`「${eventItem.title}」を削除しますか？`)) {
+                              setEvents((items) =>
+                                items.filter((entry) => entry.id !== eventItem.id),
+                              );
+                              notify(`${eventItem.title} を削除しました`);
+                            }
+                          }}
+                          aria-label={`${eventItem.title}。ドラッグして移動、右端へドラッグして削除。クリックして削除`}
+                        >
+                          <span className={styles.eventLabel}>予定</span>
+                          <strong>{eventItem.title}</strong>
+                        </button>
+                      ))}
                     </div>
                   );
                 })}
@@ -573,15 +726,17 @@
           type="button"
           className={`${styles.trashZone} ${
             trashActive ? styles.trashActive : ""
-          } ${drag?.kind === "existing" ? styles.trashVisible : ""}`}
-          aria-label="ここにドロップして科目を削除"
+          } ${(drag?.kind === "existing" || drag?.kind === "event") ? styles.trashVisible : ""}`}
+          aria-label="ここにドロップして授業・予定を削除"
           onPointerUp={() => {
             const current = dragRef.current;
 
-            if (current?.kind === "existing") {
-              setSchedule((items) =>
-                items.filter((item) => item.id !== current.id),
-              );
+            if (current?.kind === "existing" || current?.kind === "event") {
+              if (current.kind === "event") {
+                setEvents((items) => items.filter((item) => item.id !== current.id));
+              } else {
+                setSchedule((items) => items.filter((item) => item.id !== current.id));
+              }
               notify(`${current.name} を削除しました`);
               dragRef.current = null;
               setDrag(null);
@@ -701,6 +856,102 @@
             {message}
           </div>
         )}
+        {eventModalOpen && (
+          <div
+            className={styles.eventBackdrop}
+            onClick={() => setEventModalOpen(false)}
+          >
+            <section
+              className={styles.eventModal}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="event-modal-title"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className={styles.eventModalHeader}>
+                <h2 id="event-modal-title">予定を作成</h2>
+                <button
+                  type="button"
+                  onClick={() => setEventModalOpen(false)}
+                  aria-label="予定作成画面を閉じる"
+                >
+                  ×
+                </button>
+              </div>
+
+              <form className={styles.eventForm} onSubmit={createEvent}>
+                <label>
+                  予定名
+                  <input
+                    autoFocus
+                    value={eventTitle}
+                    onChange={(event) => setEventTitle(event.target.value)}
+                    placeholder="例：課題の提出"
+                    maxLength={60}
+                    required
+                  />
+                </label>
+
+                <div className={styles.eventFormRow}>
+                  <label>
+                    曜日
+                    <select
+                      value={eventDay}
+                      onChange={(event) => setEventDay(event.target.value)}
+                    >
+                      {DAYS.map((day, index) => (
+                        <option key={day} value={index}>{day}曜日</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    時限
+                    <select
+                      value={eventPeriod}
+                      onChange={(event) => setEventPeriod(event.target.value)}
+                    >
+                      {PERIODS.map((period, index) => (
+                        <option key={period.label} value={index}>
+                          {period.label}（{period.time}〜）
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                <label>
+                  色
+                  <select
+                    value={eventColor}
+                    onChange={(event) => setEventColor(event.target.value)}
+                  >
+                    <option value="#ff4d8d">ピンク</option>
+                    <option value="#6478ff">ブルー</option>
+                    <option value="#16a085">グリーン</option>
+                    <option value="#e6a23c">オレンジ</option>
+                    <option value="#8b5cf6">パープル</option>
+                  </select>
+                </label>
+
+                <label>
+                  メモ（任意）
+                  <textarea
+                    value={eventMemo}
+                    onChange={(event) => setEventMemo(event.target.value)}
+                    placeholder="持ち物や予定の詳細"
+                    rows={3}
+                    maxLength={300}
+                  />
+                </label>
+
+                <button className={styles.eventSubmit} type="submit">
+                  予定を登録する
+                </button>
+              </form>
+            </section>
+          </div>
+        )}
+
         <TimetableSettingsModal
           open={gradeSettingsOpen}
           onClose={() => setGradeSettingsOpen(false)}
