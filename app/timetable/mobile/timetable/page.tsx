@@ -141,7 +141,7 @@
     const [trashActive, setTrashActive] = useState(false);
     const [gradeSettingsOpen, setGradeSettingsOpen] = useState(false);
     const [course, setCourse] = useState("SEコース");
-
+    const [selectedTag, setSelectedTag] = useState("すべて");
 
 
 
@@ -234,15 +234,31 @@
         );
     }, [grade, semester]);
 
+    const availableTags = useMemo(() => {
+      const tags = availableCourses.flatMap((course) => {
+        const review = reviewCourses.find(
+          (item) => item.code === course.code
+        );
+
+        return review?.tags ?? [];
+      });
+
+      return ["すべて", ...Array.from(new Set(tags))];
+    }, [availableCourses]);
+
     const filteredCourses = useMemo(() => {
-      const query = search.trim().toLocaleLowerCase();
+      if (selectedTag === "すべて") {
+        return availableCourses;
+      }
 
-      if (!query) return availableCourses;
+      return availableCourses.filter((course) => {
+        const review = reviewCourses.find(
+          (item) => item.code === course.code
+        );
 
-      return availableCourses.filter((course) =>
-        course.name.toLocaleLowerCase().includes(query),
-      );
-    }, [availableCourses, search]);
+        return review?.tags?.includes(selectedTag) ?? false;
+      });
+    }, [availableCourses, selectedTag]);
 
     const notify = useCallback((text: string) => {
       setMessage(text);
@@ -610,15 +626,22 @@
             </button>
           </div>
 
-          <label className={styles.searchBox}>
-            <span aria-hidden="true">⌕</span>
-            <input
-              type="search"
-              placeholder="科目名で検索"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </label>
+          <div className={styles.tagFilters}>
+            {availableTags.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                className={
+                  selectedTag === tag
+                    ? styles.tagActive
+                    : styles.tagButton
+                }
+                onClick={() => setSelectedTag(tag)}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
 
           <div className={styles.courseList}>
             {filteredCourses.length === 0 ? (
