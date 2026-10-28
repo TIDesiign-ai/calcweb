@@ -1700,7 +1700,14 @@ export default function TimetableApp({
                 }
               />
             ) : page === "prompt" ? (
-              <PromptGenerator />
+              <PromptGenerator
+                grade={selectedGrade}
+                semester={selectedSemester}
+                course={selectedModel}
+                onGradeChangeAction={setSelectedGrade}
+                onSemesterChangeAction={setSelectedSemester}
+                onCourseChangeAction={setSelectedModel}
+              />
             ) : (
               <section id="courses">
                 {/* 既存の口コミページの内容 */}

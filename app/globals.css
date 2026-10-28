@@ -2297,3 +2297,80 @@ body::-webkit-scrollbar {
     font-size: 0.88rem;
   }
 }
+.prompt-generator__ai-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.prompt-generator__ai-buttons button {
+  flex: 1 1 140px;
+  padding: 12px 18px;
+  border: 1px solid var(--border, #e2e5ed);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  color: var(--text, #202333);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.prompt-generator__ai-buttons button:hover {
+  transform: translateY(-2px);
+  border-color: #6c63ff;
+  box-shadow: 0 5px 16px rgb(108 99 255 / 15%);
+}
+.prompt-generator__course-settings {
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--border, #e2e5ed);
+  border-radius: 12px;
+  background: var(--bg, #f5f6fa);
+}
+
+.prompt-generator__settings-label {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--muted, #73798b);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.prompt-generator__course-settings-fields {
+  display: grid;
+  grid-template-columns: 0.7fr 0.9fr 1.4fr;
+  gap: 10px;
+}
+
+.prompt-generator__course-settings-fields label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  font-size: 0.8rem;
+}
+
+.prompt-generator__course-settings-fields select {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid var(--border, #e2e5ed);
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  color: var(--text, #202333);
+  font: inherit;
+}
+
+@media (max-width: 480px) {
+  .prompt-generator__course-settings-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .prompt-generator__course-settings-fields label:last-child {
+    grid-column: 1 / -1;
+  }
+}

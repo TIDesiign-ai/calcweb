@@ -4,6 +4,26 @@ import promptData from "../../data/lib/promptmaker/prompts.json";
 
 import { useMemo, useState } from "react";
 
+import type { Grade } from "../../data/lib/grade-theme";
+import type { Semester } from "../../data/lib/course-selector";
+
+type CourseModelId =
+  | "SEコース"
+  | "IoTコース"
+  | "DSコース"
+  | "CSコース"
+  | "CGコース"
+  | "DEコース";
+
+  type PromptGeneratorProps = {
+    grade: Grade;
+    semester: Semester;
+    course: CourseModelId | null;
+    onGradeChangeAction: (grade: Grade) => void;
+    onSemesterChangeAction: (semester: Semester) => void;
+    onCourseChangeAction: (course: CourseModelId) => void;
+  };
+
 type Tag = {
   id: string;
   label: string;
@@ -17,7 +37,14 @@ type TagCategory = {
 
 const TAG_CATEGORIES = tagData.categories as TagCategory[];
 
-export default function PromptGenerator() {
+export default function PromptGenerator({
+  grade,
+  semester,
+  course,
+  onGradeChangeAction,
+  onSemesterChangeAction,
+  onCourseChangeAction,
+}: PromptGeneratorProps) {
   const [search, setSearch] = useState("");
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
@@ -52,6 +79,11 @@ export default function PromptGenerator() {
 
     setPrompt(`あなたは大学の履修選択を支援する専門アドバイザーです。
 
+  ## ユーザーの履修条件
+  - 学年：${grade}年
+  - 学期：${semester}
+  - 履修コース：${course}
+
   ## ユーザーの興味・関心
   ${interests.length ? interests.join("、") : "特に指定なし"}
 
@@ -78,7 +110,7 @@ export default function PromptGenerator() {
   授業データにない情報は捏造せず、不明な点は不明と明記してください。
 
   ## 授業データ
-  ここに履修ナビの授業データを追加してください。`);
+  pdf形式で与えられます。`);
 
     setCopied(false);
   };
@@ -103,6 +135,60 @@ export default function PromptGenerator() {
       </header>
 
       <section className="prompt-generator__panel">
+        <div className="prompt-generator__course-settings">
+          <span className="prompt-generator__settings-label">
+            現在の履修条件
+          </span>
+
+          <div className="prompt-generator__course-settings-fields">
+            <label>
+              <span>学年</span>
+              <select
+                value={grade}
+                onChange={(e) =>
+                  onGradeChangeAction(Number(e.target.value) as Grade)
+                }
+              >
+                {[1, 2, 3, 4].map((value) => (
+                  <option key={value} value={value}>
+                    {value}年
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              <span>学期</span>
+              <select
+                value={semester}
+                onChange={(e) =>
+                  onSemesterChangeAction(e.target.value as Semester)
+                }
+              >
+                <option value="前期">前期</option>
+                <option value="後期">後期</option>
+              </select>
+            </label>
+
+            <label>
+              <span>履修コース</span>
+              <select
+                value={course ?? ""}
+                onChange={(e) =>
+                  onCourseChangeAction(e.target.value as CourseModelId)
+                }
+              >
+                {["SEコース", "IoTコース", "DSコース", "CSコース", "CGコース", "DEコース"].map(
+                  (value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  )
+                )}
+              </select>
+            </label>
+          </div>
+        </div>
         <h3>興味・学期の過ごし方</h3>
 
         <input
@@ -209,6 +295,29 @@ export default function PromptGenerator() {
           rows={16}
           aria-label="生成されたプロンプト"
         />
+        <h2>お試しあれ！！！(TIDPortal内ファイルモジュール 履修関連→シラバス→のファイルをAIに渡してください)</h2>
+        <div className="prompt-generator__ai-buttons">
+          <button
+            type="button"
+            onClick={() => window.open("https://chatgpt.com/", "_blank", "noopener,noreferrer")}
+          >
+            ChatGPT →
+          </button>
+
+          <button
+            type="button"
+            onClick={() => window.open("https://gemini.google.com/", "_blank", "noopener,noreferrer")}
+          >
+            Gemini →
+          </button>
+
+          <button
+            type="button"
+            onClick={() => window.open("https://claude.ai/", "_blank", "noopener,noreferrer")}
+          >
+            Claude →
+          </button>
+        </div>
       </section>
     </section>
   );

@@ -26,7 +26,7 @@
   {
     "id": "full-credits",
     "name": "フル単……の予定",
-    "description": "履修登録単位数が24単位に到達した",
+    "description": "履修登録単位数が24単位に到達した。絶対にバックレそう。",
     "icon": "📚",
     "rarity": "epic",
     "trigger": "full_credits"
@@ -34,7 +34,7 @@
   {
     "id": "fifth-period",
     "name": "限界大学生",
-    "description": "5限まで授業がある曜日を作った",
+    "description": "１～5限まで授業がある曜日を作った。多分その曜日の科目は飛ぶ♪",
     "icon": "🔥",
     "rarity": "epic",
     "trigger": "fifth_period"
