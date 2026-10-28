@@ -74,11 +74,11 @@
   const SWIPE_THRESHOLD = 5;
   const DAYS = ["月", "火", "水", "木", "金"];
   const PERIODS = [
-    { label: "1限", time: "9:10" },
-    { label: "2限", time: "11:00" },
-    { label: "3限", time: "13:40" },
-    { label: "4限", time: "15:30" },
-    { label: "5限", time: "17:20" },
+    { label: "1限", time: "9:10 ~ 10:50" },
+    { label: "2限", time: "11:00 ~ 12:40" },
+    { label: "3限", time: "13:40 ~ 15:20" },
+    { label: "4限", time: "15:30 ~ 17:10" },
+    { label: "5限", time: "17:20 ~ 19:00" },
 ];
 
 
