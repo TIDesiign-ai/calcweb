@@ -529,6 +529,14 @@ export default function Home({ onBackAction }: HomeProps) {
           <div className="eyebrow">DEGREE INSPECTOR</div>
           <h1 style={{ fontSize: "clamp(27px, 4vw, 40px)", lineHeight: 1.35, margin: "10px 0" }}>卒業までの道のりを、<br />ひと目でわかるように。</h1>
           <p style={{ color: "var(--di-text-secondary)", lineHeight: 1.8, fontSize: 14, marginBottom: 0 }}>成績表のHTMLファイルを選ぶだけ。卒業要件・修得単位・履修単位を自動で読み取り、卒業までの単位状況を確認できます。</p>
+            <a
+              href="https://docs.google.com/presentation/d/1a4QvpgGvGk2mxRHZXEqxgMOsZeSGjyVACQyvpA8dZNA/present"
+              className="button"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              使い方ガイド
+            </a>
         </section>
 
         <section className="di-section di-import" style={{ border: "1px solid #var(--di-border-strong)", borderRadius: 16, padding: 20, marginBottom: 22 }}>

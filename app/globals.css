@@ -1064,7 +1064,7 @@ body {
 }
 
 .tutorial-launch-btn:hover {
-  background: surface2;
+  background: var(--surface2);;
   transform: translateY(-1px);
 }
 
