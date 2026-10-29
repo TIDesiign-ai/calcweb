@@ -1027,7 +1027,8 @@
               requestAnimationFrame(() => setTutorialOpen(true));
             }}
           >
-            <span aria-hidden="true">✦</span>
+              <span aria-hidden="true"
+                className="theme-btn">✦</span>
             使い方
           </button>
 
