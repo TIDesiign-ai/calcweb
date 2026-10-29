@@ -2374,3 +2374,102 @@ body::-webkit-scrollbar {
     grid-column: 1 / -1;
   }
 }
+/* ========================================
+   スマホ版ヘッダー修正
+   ======================================== */
+@media (max-width: 600px) {
+  .root .topbar {
+    height: auto;
+    min-height: 0;
+    padding: 10px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  /* 左上：ブランド */
+  .root .brand {
+    flex: 0 0 auto;
+    min-width: 0;
+    gap: 7px;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+
+  .root .logo {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+
+  /* 右上：実績・使い方・テーマ */
+  .root .topbar-utilities {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .root .topbar-utilities button {
+    min-width: 0;
+    padding: 7px 6px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  /* 下段：メインメニュー */
+  .root .nav {
+    order: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .root .nav button {
+    width: 100%;
+    min-width: 0;
+    padding: 9px 4px;
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: center;
+    overflow-wrap: anywhere;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+  }
+}
+
+/* 小型スマホ */
+@media (max-width: 380px) {
+  .root .topbar {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .root .brand {
+    font-size: 13px;
+  }
+
+  .root .topbar-utilities {
+    gap: 2px;
+  }
+
+  .root .topbar-utilities button {
+    padding: 6px 4px;
+    font-size: 10px;
+  }
+
+  .root .nav {
+    gap: 4px;
+  }
+
+  .root .nav button {
+    font-size: 11px;
+  }
+}
