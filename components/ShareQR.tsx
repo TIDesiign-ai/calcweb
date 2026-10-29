@@ -17,7 +17,7 @@ export default function ShareQR() {
         onClick={() => setOpen(true)}
       >
         <span className={styles.shareIcon}>↗</span>
-        トモダチにも教える！
+        友達にも教える！
       </button>
 
       {open && (
@@ -46,7 +46,7 @@ export default function ShareQR() {
             </div>
 
             <h2 id="share-title">
-              トモダチにも教える！
+              友達にも教える！
             </h2>
 
             <p className={styles.description}>
