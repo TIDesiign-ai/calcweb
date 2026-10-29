@@ -90,6 +90,14 @@
       .slice(2, 9)}`;
   }
 
+  function getCourseFontSize(name: string) {
+    if (name.length <= 7) return 14;
+    if (name.length <= 14) return 10;
+    if (name.length <= 22) return 7;
+    if (name.length <= 30) return 5;
+    return 8;
+  }
+
   function getCourseInfo(code: string) {
     const review = reviewCourses.find((item) => item.code === code);
 
@@ -114,6 +122,14 @@
       color: "#64748b",
       textColor: "#ffffff",
     };
+  }
+
+  function getCourseCredits(courseId: string): number | undefined {
+    const catalog = catalogCourses.find(
+      (item) => item.id === courseId
+    );
+
+    return catalog?.credits;
   }
 
   function loadSchedule(): ScheduleItem[] {
@@ -174,6 +190,12 @@
     const router = useRouter();
     const gridRef = useRef<HTMLDivElement>(null);
     const dragRef = useRef<DragState | null>(null);
+    const pendingCourseDragRef = useRef<{
+      item: Omit<Extract<DragState, { kind: "new" }>, "x" | "y">;
+      x: number;
+      y: number;
+      timer: ReturnType<typeof setTimeout>;
+    } | null>(null);
     const touchStartRef = useRef<{ x: number; y: number } | null>(null);
     const movedRef = useRef(false);
 
@@ -423,6 +445,42 @@
       movedRef.current = false;
       setDrag(next);
     };
+    useEffect(() => {
+      const cancelPendingDrag = () => {
+        const pending = pendingCourseDragRef.current;
+        if (!pending) return;
+
+        clearTimeout(pending.timer);
+        pendingCourseDragRef.current = null;
+      };
+
+      const onMove = (event: PointerEvent) => {
+        const pending = pendingCourseDragRef.current;
+        if (!pending) return;
+
+        const dx = event.clientX - pending.x;
+        const dy = event.clientY - pending.y;
+
+        // 指が動いたらスクロール操作と判断して長押しを解除
+        if (Math.hypot(dx, dy) > 10) {
+          cancelPendingDrag();
+        }
+      };
+
+      window.addEventListener("pointermove", onMove, {
+        passive: true,
+      });
+      window.addEventListener("pointerup", cancelPendingDrag);
+      window.addEventListener("pointercancel", cancelPendingDrag);
+
+      return () => {
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", cancelPendingDrag);
+        window.removeEventListener("pointercancel", cancelPendingDrag);
+
+        cancelPendingDrag();
+      };
+    }, []);
 
     const beginExistingDrag = (
       item: ScheduleItem,
@@ -835,7 +893,15 @@
             ))}
           </div>
 
-          <div className={styles.courseList}>
+          <div
+            className={styles.courseList}
+            style={{
+              gridTemplateColumns: `repeat(${Math.max(
+                1,
+                Math.ceil(filteredCourses.length / 6)
+              )}, minmax(0, 1fr))`,
+            }}
+          >
             {filteredCourses.length === 0 ? (
               <p className={styles.empty}>該当する科目がありません。</p>
             ) : (
@@ -848,23 +914,63 @@
                     borderLeftColor: course.color,
                   }}
                   onPointerDown={(event) => {
-                    event.preventDefault();
+                    const item = {
+                      kind: "new" as const,
+                      code: course.code,
+                      name: course.name,
+                      color: course.color,
+                      textColor: course.textColor,
+                    };
 
-                    beginDrag(
-                      {
-                        kind: "new",
-                        code: course.code,
-                        name: course.name,
-                        color: course.color,
-                        textColor: course.textColor,
-                      },
-                      event.clientX,
-                      event.clientY,
-                    );
+                    // マウスは従来どおり、押した瞬間にドラッグ開始
+                    if (event.pointerType === "mouse") {
+                      event.preventDefault();
+
+                      beginDrag(item, event.clientX, event.clientY);
+                      return;
+                    }
+
+                    // タッチ・ペンでは、前の長押し判定を解除
+                    const previous = pendingCourseDragRef.current;
+
+                    if (previous) {
+                      clearTimeout(previous.timer);
+                    }
+
+                    const x = event.clientX;
+                    const y = event.clientY;
+
+                    const timer = setTimeout(() => {
+                      const pending = pendingCourseDragRef.current;
+
+                      if (!pending || pending.timer !== timer) return;
+
+                      pendingCourseDragRef.current = null;
+                      beginDrag(item, x, y);
+                    }, 350);
+
+                    pendingCourseDragRef.current = {
+                      item,
+                      x,
+                      y,
+                      timer,
+                    };
                   }}
                 >
-                  <strong>{course.name}</strong>
-                  <span>ドラッグして配置 ↙</span>
+                  <strong
+                    style={{
+                      fontSize: `${getCourseFontSize(course.name)}px`,
+                      lineHeight: 1.0,
+                      overflowWrap: "anywhere",
+                      wordBreak: "normal",
+                    }}
+                  >
+                    {course.name}
+                  </strong>
+                  <span>
+                    {getCourseCredits(course.id) ?? "?"}単位
+                  </span>
+                  {/*予定も動的に反映予定 */}
                 </button>
               ))
             )}
