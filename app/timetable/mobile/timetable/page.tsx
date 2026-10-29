@@ -5,6 +5,7 @@
 
   import TimetableSettingsModal from "../../../../components/TimetableSettingsModal";
   import homeStyles from "../../../home.module.css";
+  const THEME_KEY = "course-nav-theme";
 
   import {
     getSelectableCourses,
@@ -195,6 +196,42 @@
     const [message, setMessage] = useState("");
     const [trashActive, setTrashActive] = useState(false);
     const [gradeSettingsOpen, setGradeSettingsOpen] = useState(false);
+    const [theme, setTheme] = useState<"light" | "dark">("light");
+
+    useEffect(() => {
+      const syncTheme = () => {
+        const currentTheme = document.documentElement.dataset.theme;
+
+        if (currentTheme === "light" || currentTheme === "dark") {
+          setTheme(currentTheme);
+          return;
+        }
+
+        const savedTheme = localStorage.getItem(THEME_KEY);
+
+        if (savedTheme === "light" || savedTheme === "dark") {
+          setTheme(savedTheme);
+        }
+      };
+
+      syncTheme();
+
+      // メイン画面側で html の data-theme が変更されたら同期
+      const observer = new MutationObserver(syncTheme);
+
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+      });
+
+      // localStorage の変更も監視（別タブなど）
+      window.addEventListener("storage", syncTheme);
+
+      return () => {
+        observer.disconnect();
+        window.removeEventListener("storage", syncTheme);
+      };
+    }, []);
     const [course, setCourse] = useState("SEコース");
     const [selectedTag, setSelectedTag] = useState("すべて");
 
@@ -568,6 +605,7 @@
     return (
       <main
         className={styles.app}
+        data-theme={theme}
       >
         <header className={styles.header}>
           <button
