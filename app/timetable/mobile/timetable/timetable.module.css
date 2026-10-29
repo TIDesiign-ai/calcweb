@@ -19,16 +19,14 @@
   touch-action: pan-y;
 }
 
-@media (prefers-color-scheme: dark) {
-  .app {
-    --bg: #101116;
-    --surface: #1b1d25;
-    --text: #f2f3f8;
-    --muted: #a2a6b7;
-    --border: #343642;
-    --accent: #928bff;
-    --danger: #ff6262;
-  }
+.app[data-theme="dark"] {
+  --bg: #101116;
+  --surface: #1b1d25;
+  --text: #f2f3f8;
+  --muted: #a2a6b7;
+  --border: #343642;
+  --accent: #928bff;
+  --danger: #ff6262;
 }
 
 .header {
