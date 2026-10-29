@@ -232,8 +232,8 @@ export default function PromptGenerator({
             </label>
           </div>
         </div>
-        <h3>興味・学期の過ごし方</h3>
-
+        <h3>興味・学期の過ごし方(タグ検索)</h3>
+{/*
         <input
           className="prompt-generator__search"
           type="search"
@@ -242,7 +242,7 @@ export default function PromptGenerator({
           onChange={(event) => setSearch(event.target.value)}
           aria-label="タグを検索"
         />
-
+        */}
         {TAG_CATEGORIES.map((category) => {
           const selected =
             category.id === "interests"
