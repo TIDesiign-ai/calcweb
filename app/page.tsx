@@ -185,6 +185,7 @@ export default function HomePage() {
         </button>
       </section>
 
+      {/*
       <section className={styles.tutorial}>
         <div className={styles.tutorialText}>
           <p className={styles.eyebrow}>GETTING STARTED</p>
@@ -197,6 +198,8 @@ export default function HomePage() {
           <span aria-hidden="true">→</span>
         </Link>
       </section>
+
+*/}
 
       <footer className={styles.footer}>
         <span>履修ナビ</span>
