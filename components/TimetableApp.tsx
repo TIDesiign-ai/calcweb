@@ -1418,14 +1418,6 @@
                     </span>
 
                     <div className="course-filter">
-                      <input
-                        type="search"
-                        className="course-search"
-                        placeholder="🔍 科目名で検索..."
-                        value={courseSearch}
-                        onChange={(event) => setCourseSearch(event.target.value)}
-                        aria-label="科目名で検索"
-                      />
 
                       <div className="course-category-filters">
                         {["すべて", ...courseCategories].map((category) => (
