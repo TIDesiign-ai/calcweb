@@ -1012,7 +1012,7 @@
         <div className="topbar-utilities">
           <button
             type="button"
-            className="achievementButton"
+            className="theme-btn"
             onClick={() => setShowAchievements(true)}
           >
             🏆 実績
@@ -1020,15 +1020,14 @@
 
           <button
             type="button"
-            className="tutorial-launch-btn"
+            className="theme-btn"
             onClick={() => {
               setPage("timetable");
               setTutorialOpen(false);
               requestAnimationFrame(() => setTutorialOpen(true));
             }}
           >
-              <span aria-hidden="true"
-                className="theme-btn">✦</span>
+              <span aria-hidden="true">✦</span>
             使い方
           </button>
 
