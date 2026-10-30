@@ -133,6 +133,26 @@ export default function HomePage() {
         </p>
       </section>
 
+      <section className={styles.startSection}>
+        <div className={styles.startText}>
+          <p className={styles.eyebrow}>LET'S GET STARTED</p>
+          <h2>時間割をつくろう。</h2>
+          <p>
+            学年・学期・コースを設定して、
+            自分の時間割を編集しよう。
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className={styles.primaryButton}
+          onClick={() => setModalOpen(true)}
+        >
+          時間割を編集する
+          <span aria-hidden="true">→</span>
+        </button>
+      </section>
+
       <section className={styles.features}>
         <div className={styles.sectionHeading}>
           <div>
@@ -165,25 +185,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className={styles.startSection}>
-        <div className={styles.startText}>
-          <p className={styles.eyebrow}>LET'S GET STARTED</p>
-          <h2>時間割をつくろう。</h2>
-          <p>
-            学年・学期・コースを設定して、
-            自分の時間割を編集しよう。
-          </p>
-        </div>
 
-        <button
-          type="button"
-          className={styles.primaryButton}
-          onClick={() => setModalOpen(true)}
-        >
-          時間割を編集する
-          <span aria-hidden="true">→</span>
-        </button>
-      </section>
 
       {/*
       <section className={styles.tutorial}>
