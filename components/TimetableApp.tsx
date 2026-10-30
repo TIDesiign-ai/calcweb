@@ -9,8 +9,8 @@
   import ShareQR from "./ShareQR";
 
   import Link from "next/link";
-  import { useCallback, useEffect, useMemo, useState } from "react";
-  import type { DragEvent } from "react";
+  import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+  import type { ChangeEvent, DragEvent } from "react";
   import { courses } from "../data/lib/reviews";
 
   import GradeSelector from "./GradeSelector";
@@ -36,11 +36,38 @@
   import AchievementToast from "./dp-content/AchievementToast";
   import type { Achievement, AchievementTrigger } from "../data/lib/dp-content/achievements";
 
-  type ScheduleItem = {
+  // 時間割の科目データ
+  export type ScheduleItem = {
     id: string;
     code: string;
+    day: number;     // 0:月 ～ 4:金
+    period: number;  // 0:1限 ～ 4:5限
+  };
+
+  // 自作予定の定義
+  export type CustomBlock = {
+    id: string;
+    title: string;
+    memo: string;
+    color: string;
+  };
+
+  // 時間割上の予定配置
+  export type ScheduleEvent = {
+    id: string;
+    blockId: string;
     day: number;
-    period: number;
+    rowIndex: number;
+  };
+
+  // 時間割JSONのインポート形式
+  export type TimetableJson = {
+    version: 1;
+    exportedAt?: string;
+
+    schedule: ScheduleItem[];
+    customBlocks: CustomBlock[];
+    events: ScheduleEvent[];
   };
 
   type RecommendedCreditsConfig = {
@@ -119,6 +146,30 @@
         textColor: reviewCourse.textColor,
       };
     }
+    // 科目名から時間割用の科目コードを取得
+    function getTimetableCodeByName(courseName: string): string | undefined {
+      const normalizedName = courseName.trim();
+
+      // 口コミデータから検索
+      const reviewCourse = reviewCourses.find(
+        (item) => item.name.trim() === normalizedName
+      );
+
+      if (reviewCourse) {
+        return reviewCourse.code;
+      }
+
+      // シラバス由来の科目から検索
+      const catalogCourse = catalogCourses.find(
+        (item) => item.course_name.trim() === normalizedName
+      );
+
+      if (catalogCourse) {
+        return `catalog:${catalogCourse.id}`;
+      }
+
+      return undefined;
+    }
 
     // シラバス由来の科目
     // 新しい識別子 catalog:<id> と、旧形式の id の両方に対応
@@ -137,6 +188,84 @@
       color: "#64748b",
       textColor: "#ffffff",
       credits: catalogCourse.credits,
+    };
+  }
+
+  // AI履修推薦JSONを時間割形式に変換
+  function convertRecommendationJson(data: Record<string, unknown>): TimetableJson {
+    if (!Array.isArray(data.timetable)) {
+      throw new Error("JSONにtimetable配列がありません");
+    }
+
+    const schedule: ScheduleItem[] = data.timetable.map(
+      (entry: unknown, index: number) => {
+        if (
+          typeof entry !== "object" ||
+          entry === null ||
+          !("course_name" in entry) ||
+          !("day" in entry) ||
+          !("period" in entry)
+        ) {
+          throw new Error(`${index + 1}件目の時間割データが不正です`);
+        }
+
+        const item = entry as {
+          course_name: unknown;
+          day: unknown;
+          period: unknown;
+        };
+
+        if (typeof item.course_name !== "string") {
+          throw new Error("授業名が文字列ではありません");
+        }
+
+        // 曜日を数値に変換
+        const dayIndex =
+          typeof item.day === "string"
+            ? DAYS.indexOf(item.day)
+            : -1;
+
+        if (dayIndex < 0 || dayIndex >= DAYS.length) {
+          throw new Error(
+            `「${item.course_name}」の曜日が不正です: ${String(item.day)}`
+          );
+        }
+
+        // JSONは1〜5限、内部データは0〜4
+        if (
+          !Number.isInteger(item.period) ||
+          (item.period as number) < 1 ||
+          (item.period as number) > 5
+        ) {
+          throw new Error(
+            `「${item.course_name}」の時限が不正です`
+          );
+        }
+
+        // 科目名から内部コードを取得
+        const code = getTimetableCodeByName(item.course_name);
+
+        if (!code) {
+          throw new Error(
+            `科目一覧に「${item.course_name}」が見つかりません`
+          );
+        }
+
+        return {
+          id: makeId(),
+          code,
+          day: dayIndex,
+          period: (item.period as number) - 1,
+        };
+      }
+    );
+
+    return {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      schedule,
+      customBlocks: [],
+      events: [],
     };
   }
 
@@ -182,13 +311,18 @@
     hideTimetable = false,
   }: TimetableAppProps) {
     const router = useRouter();
+    const [importModalOpen, setImportModalOpen] = useState(false);
+    const [importJsonText, setImportJsonText] = useState("");
+    const importFileRef = useRef<HTMLInputElement>(null);
     const [page, setPage] = useState<
       "courses" | "timetable" | "calccalc"| "prompt"
     >(hideTimetable ? "courses" : initialPage);
     const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
+
     const totalCredits = useMemo(() => {
       // 科目名ごとに重複排除
       const uniqueCourses = new Map<string, number>();
+
 
       for (const item of schedule) {
         const catalogId = item.code.startsWith("catalog:")
@@ -912,6 +1046,263 @@
       notify("時間割をリセットしました");
     };
 
+    // ファイルからインポート
+    const handleImportTimetable = async (
+      event: ChangeEvent<HTMLInputElement>
+    ) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        importTimetableFromText(text);
+      } catch (error) {
+        notify("ファイルの読み込みに失敗しました");
+      } finally {
+        event.target.value = "";
+      }
+    };
+
+    // テキストからインポート
+    const handlePasteImport = () => {
+      if (!importJsonText.trim()) {
+        notify("JSONを入力してください");
+        return;
+      }
+
+      importTimetableFromText(importJsonText);
+    };
+    // JSONインポート
+    // JSONインポート共通処理
+    const importTimetableFromText = (text: string) => {
+      try {
+        const data: unknown = JSON.parse(text);
+
+        if (typeof data !== "object" || data === null) {
+          throw new Error("JSONの形式が正しくありません");
+        }
+
+        const jsonData = data as Record<string, unknown>;
+
+        let imported: TimetableJson;
+
+        // AIおすすめJSON形式
+        if ("timetable" in jsonData) {
+          if (!Array.isArray(jsonData.timetable)) {
+            throw new Error("timetableが配列ではありません");
+          }
+
+          const schedule: ScheduleItem[] = jsonData.timetable.map(
+            (entry: unknown, index: number) => {
+              if (
+                typeof entry !== "object" ||
+                entry === null ||
+                !("course_name" in entry) ||
+                !("day" in entry) ||
+                !("period" in entry)
+              ) {
+                throw new Error(`${index + 1}件目の時間割データが不正です`);
+              }
+
+              const item = entry as {
+                course_name: unknown;
+                day: unknown;
+                period: unknown;
+              };
+
+              if (
+                typeof item.course_name !== "string" ||
+                typeof item.day !== "string"
+              ) {
+                throw new Error(`${index + 1}件目の科目情報が不正です`);
+              }
+
+              const day = DAYS.indexOf(item.day);
+
+              if (day === -1) {
+                throw new Error(`曜日が不正です: ${item.day}`);
+              }
+
+              if (
+                !Number.isInteger(item.period) ||
+                (item.period as number) < 1 ||
+                (item.period as number) > 5
+              ) {
+                throw new Error(`時限が不正です: ${item.course_name}`);
+              }
+
+              // 科目名から内部コードを取得
+              const reviewCourse = reviewCourses.find(
+                (course) => course.name.trim() === item.course_name.trim()
+              );
+
+              const catalogCourse = catalogCourses.find(
+                (course) =>
+                  course.course_name.trim() === item.course_name.trim()
+              );
+
+              const code =
+                reviewCourse?.code ??
+                (catalogCourse ? `catalog:${catalogCourse.id}` : undefined);
+
+              if (!code || !getTimetableCourse(code)) {
+                throw new Error(
+                  `科目一覧に「${item.course_name}」が見つかりません`
+                );
+              }
+
+              return {
+                id: makeId(),
+                code,
+                day,
+                period: (item.period as number) - 1,
+              };
+            }
+          );
+
+          imported = {
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            schedule,
+            customBlocks: [],
+            events: [],
+          };
+        }
+        // 従来の時間割JSON形式
+        else {
+          if (
+            !("version" in jsonData) ||
+            !("schedule" in jsonData) ||
+            !("customBlocks" in jsonData) ||
+            !("events" in jsonData)
+          ) {
+            throw new Error("JSONの形式が正しくありません");
+          }
+
+          imported = jsonData as unknown as TimetableJson;
+        }
+
+        if (imported.version !== 1) {
+          throw new Error("対応していないJSONバージョンです");
+        }
+
+        if (
+          !Array.isArray(imported.schedule) ||
+          !Array.isArray(imported.customBlocks) ||
+          !Array.isArray(imported.events)
+        ) {
+          throw new Error("時間割データが配列ではありません");
+        }
+
+        // 科目データの検証
+        const validSchedule = imported.schedule.every((item) =>
+          typeof item.id === "string" &&
+          typeof item.code === "string" &&
+          getTimetableCourse(item.code) !== undefined &&
+          Number.isInteger(item.day) &&
+          item.day >= 0 &&
+          item.day <= 4 &&
+          Number.isInteger(item.period) &&
+          item.period >= 0 &&
+          item.period <= 4
+        );
+
+        if (!validSchedule) {
+          throw new Error("科目データに不正な値があります");
+        }
+
+        // 予定ブロックの検証
+        const validBlocks = imported.customBlocks.every((block) =>
+          typeof block.id === "string" &&
+          typeof block.title === "string" &&
+          typeof block.memo === "string" &&
+          typeof block.color === "string" &&
+          /^#[0-9a-fA-F]{6}$/.test(block.color)
+        );
+
+        if (!validBlocks) {
+          throw new Error("予定ブロックのデータが不正です");
+        }
+
+        const blockIds = new Set(
+          imported.customBlocks.map((block) => block.id)
+        );
+
+        // 予定配置データの検証
+        const validEvents = imported.events.every((item) =>
+          typeof item.id === "string" &&
+          typeof item.blockId === "string" &&
+          blockIds.has(item.blockId) &&
+          Number.isInteger(item.day) &&
+          item.day >= 0 &&
+          item.day <= 4 &&
+          Number.isInteger(item.rowIndex) &&
+          item.rowIndex >= 0 &&
+          item.rowIndex < TIMETABLE_ROWS.length
+        );
+
+        if (!validEvents) {
+          throw new Error("予定配置データが不正です");
+        }
+
+        // 同じコマへの重複配置を検証
+        const occupiedSlots = new Set<string>();
+
+        for (const item of imported.schedule) {
+          const key = `${item.day}-${item.period}`;
+
+          if (occupiedSlots.has(key)) {
+            throw new Error("同じコマに複数の科目が配置されています");
+          }
+
+          occupiedSlots.add(key);
+        }
+
+        for (const item of imported.events) {
+          const period = TIMETABLE_ROWS[item.rowIndex].periodIndex;
+
+          if (period === null || period === undefined) continue;
+
+          const key = `${item.day}-${period}`;
+
+          if (occupiedSlots.has(key)) {
+            throw new Error("科目と予定が同じコマに配置されています");
+          }
+
+          occupiedSlots.add(key);
+        }
+
+        if (!window.confirm("現在の時間割をJSONの内容で上書きしますか？")) {
+          return;
+        }
+
+        // 一括復元
+        // 一括復元
+        setSchedule(imported.schedule);
+        setCustomBlocks(imported.customBlocks);
+        setEvents(imported.events);
+
+        setPendingCode(null);
+        setPendingCustomBlockId(null);
+
+        notify("JSONから時間割をインポートしました！");
+
+        setImportModalOpen(false);
+        setImportJsonText("");
+
+      } catch (error) {
+        console.error("[Timetable Import]", error);
+
+        notify(
+          error instanceof Error
+            ? `インポート失敗: ${error.message}`
+            : "JSONの読み込みに失敗しました"
+        );
+      } finally {
+        // 同じファイルを再選択できるようにする
+      }
+    };
+
     const changeTheme = () => {
       setTheme((current) => (current === "light" ? "dark" : "light"));
     };
@@ -1137,6 +1528,22 @@
                         <span>時間割を登録する！</span>
                         <span className="registerArrow">→</span>
                       </button>
+
+                      <button
+                        type="button"
+                        className="action secondary"
+                        onClick={() => setImportModalOpen(true)}
+                      >
+                        📂 JSONインポート
+                      </button>
+
+                      <input
+                        ref={importFileRef}
+                        type="file"
+                        accept=".json,application/json"
+                        hidden
+                        onChange={handleImportTimetable}
+                      />
 
                       <button
                         className="action secondary"
@@ -1719,6 +2126,88 @@
           <AchievementPanel
             onClose={() => setShowAchievements(false)}
           />
+        )}
+
+        {importModalOpen && (
+          <div
+            className="import-modal-overlay"
+            onClick={() => setImportModalOpen(false)}
+          >
+            <div
+              className="import-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="import-modal-header">
+                <div>
+                  <h2>時間割をインポート</h2>
+                  <p>JSONファイルまたはテキストから読み込めます。</p>
+                </div>
+
+                <button
+                  type="button"
+                  className="import-modal-close"
+                  onClick={() => setImportModalOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* ファイルから読み込み */}
+              <div className="import-section">
+                <h3>📁 ファイルから読み込む</h3>
+
+                <button
+                  type="button"
+                  className="import-file-button"
+                  onClick={() => importFileRef.current?.click()}
+                >
+                  <span>📂</span>
+                  <span>
+                    <strong>JSONファイルを選択</strong>
+                    <small>.json ファイルに対応</small>
+                  </span>
+                </button>
+
+                <input
+                  ref={importFileRef}
+                  type="file"
+                  accept=".json,application/json"
+                  hidden
+                  onChange={handleImportTimetable}
+                />
+              </div>
+
+              <div className="import-divider">
+                <span>OR</span>
+              </div>
+
+              {/* JSON直接貼り付け */}
+              <div className="import-section">
+                <h3>📋 JSONを直接貼り付け</h3>
+
+                <textarea
+                  className="import-json-textarea"
+                  value={importJsonText}
+                  onChange={(e) => setImportJsonText(e.target.value)}
+                  placeholder={'{\n  "version": 1,\n  "schedule": [],\n  "customBlocks": [],\n  "events": []\n}'}
+                  spellCheck={false}
+                />
+
+                <button
+                  type="button"
+                  className="import-paste-button"
+                  onClick={handlePasteImport}
+                  disabled={!importJsonText.trim()}
+                >
+                  JSONをインポートする
+                </button>
+              </div>
+
+              <p className="import-warning">
+                ⚠ インポートすると現在の時間割・カスタム予定が置き換わります。
+              </p>
+            </div>
+          </div>
         )}
 
         <CreditLimitDialog

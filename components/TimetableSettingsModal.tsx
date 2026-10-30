@@ -41,7 +41,6 @@ export default function TimetableSettingsModal({
   initialSemester,
   initialCourse,
   submitLabel = "変更を保存",
-  cancelLabel = "キャンセル",
 }: Props) {
   const [grade, setGrade] = useState(initialGrade);
   const [semester, setSemester] = useState(initialSemester);
@@ -144,7 +143,7 @@ export default function TimetableSettingsModal({
         </div>
 
         <div className={styles.field}>
-          <label htmlFor="course-select">コース</label>
+          {/*<label htmlFor="course-select">コース</label>
           <select
             id="course-select"
             value={course}
@@ -155,16 +154,11 @@ export default function TimetableSettingsModal({
                 {value}
               </option>
             ))}
-          </select>
+            </select>*/}
         </div>
 
         <div className={styles.settingsActions}>
-          <button className="button buttonSecondary"
 
-            onClick={onClose}
-          >
-            {cancelLabel}
-          </button>
 
           <button
             type="button"
