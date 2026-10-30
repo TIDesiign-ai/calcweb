@@ -174,6 +174,7 @@ export default function PromptGenerator({
         <p>
           興味や学期の過ごし方に合ったタグを選択し、
           AIに履修相談するためのプロンプトを作成します。
+          実際に用いる際は必ずTIDの公式シラバス.pdfと時間割表をAIに渡してください。
         </p>
       </header>
 
