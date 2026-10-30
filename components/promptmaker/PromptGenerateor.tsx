@@ -22,6 +22,7 @@ type CourseModelId =
     onGradeChangeAction: (grade: Grade) => void;
     onSemesterChangeAction: (semester: Semester) => void;
     onCourseChangeAction: (course: CourseModelId) => void;
+    onGeneratePromptAction: () => void;
   };
 
 type Tag = {
@@ -44,6 +45,7 @@ export default function PromptGenerator({
   onGradeChangeAction,
   onSemesterChangeAction,
   onCourseChangeAction,
+  onGeneratePromptAction,
 }: PromptGeneratorProps) {
   const [search, setSearch] = useState("");
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -338,6 +340,7 @@ export default function PromptGenerator({
     以上の条件に従い、根拠のある履修提案を行ってください。`);
 
     setCopied(false);
+    onGeneratePromptAction();
   };
 
   const copyPrompt = async () => {

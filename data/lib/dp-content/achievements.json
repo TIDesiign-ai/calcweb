@@ -46,5 +46,29 @@
     "icon": "🛌",
     "rarity": "epic",
     "trigger": "full_day_off"
+  },
+  {
+    "id": "long-gap",
+    "name": "がらあき",
+    "description": "授業と授業の間に2コマ以上の空き時間を作った。なにか授業入れる？それとも趣味の時間にしちゃう？",
+    "icon": "🕳️",
+    "rarity": "rare",
+    "trigger": "long_gap"
+  },
+  {
+    "id": "ai-user",
+    "name": "AI使い",
+    "description": "AIに履修相談するためのプロンプトを生成した。",
+    "icon": "🤖",
+    "rarity": "common",
+    "trigger": "ai_user"
+  },
+  {
+    "id": "tutorial-reviewed",
+    "name": "復習",
+    "description": "もう一度使い方ガイドを開いた。",
+    "icon": "🔁",
+    "rarity": "rare",
+    "trigger": "tutorial_reviewed"
   }
 ]

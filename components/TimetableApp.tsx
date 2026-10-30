@@ -317,11 +317,6 @@
       const handleRegistration = () => {
         unlockAndNotify("first_course_added");
 
-        if (totalCredits > CREDIT_LIMIT) {
-          unlockAndNotify("attempt_over_limit");
-          setShowCreditLimitDialog(true);
-          return;
-        }
 
         if (recommendationAssessment?.level === "hard") {
           setShowUnderRecommendedDialog(true);
@@ -333,6 +328,11 @@
 
       useEffect(() => {
         if (!ready) return;
+
+        // 24単位を超えた
+        if (totalCredits > CREDIT_LIMIT) {
+          unlockAndNotify("attempt_over_limit");
+        }
 
         // 24単位に到達した
         if (totalCredits >= CREDIT_LIMIT) {
@@ -354,6 +354,25 @@
 
         if (hasFullDay) {
           unlockAndNotify("fifth_period");
+        }
+
+        // 同じ曜日に2コマ以上の空き時間がある
+        const hasLongGap = [0, 1, 2, 3, 4].some((day) => {
+          const periods = schedule
+            .filter((item) => item.day === day)
+            .map((item) => item.period)
+            .sort((a, b) => a - b);
+
+          return periods.some((period, index) => {
+            const nextPeriod = periods[index + 1];
+
+            // 例：1限と4限の間には2コマの空きがある
+            return nextPeriod !== undefined && nextPeriod - period >= 3;
+          });
+        });
+
+        if (hasLongGap) {
+          unlockAndNotify("long_gap");
         }
       }, [ready, schedule, totalCredits]);
 
@@ -1330,7 +1349,8 @@
             <button
               type="button"
               className="theme-btn"
-              onClick={() => {
+                onClick={() => {
+                unlockAndNotify("tutorial_reviewed");
                 setPage("timetable");
                 setTutorialOpen(false);
                 requestAnimationFrame(() => setTutorialOpen(true));
@@ -2029,6 +2049,7 @@
                     onGradeChangeAction={setSelectedGrade}
                     onSemesterChangeAction={setSelectedSemester}
                     onCourseChangeAction={setSelectedModel}
+                    onGeneratePromptAction={() => unlockAndNotify("ai_user")}
                   />
                 ) : (
                   <section id="courses">

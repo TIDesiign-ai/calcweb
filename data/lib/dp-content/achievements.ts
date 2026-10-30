@@ -6,7 +6,10 @@ export type AchievementTrigger =
   | "first_course_added"
   | "full_credits"
   | "fifth_period"
-  | "full_day_off";
+  | "full_day_off"
+  | "long_gap"
+  | "ai_user"
+  | "tutorial_reviewed";
 
 export type Achievement = {
   id: string;

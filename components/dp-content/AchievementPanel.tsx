@@ -147,7 +147,7 @@ export default function AchievementPanel({ onClose }: Props) {
                         : styles.lockedLabel
                     }
                   >
-                    {unlocked ? "✓ ACHIEVED" : "NOT YET"}
+                    {unlocked ? "✓ ACHIEVED" : "UNKNOWN404"}
                   </span>
                 </div>
               </article>
