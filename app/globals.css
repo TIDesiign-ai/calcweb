@@ -2636,3 +2636,26 @@ body::-webkit-scrollbar {
   color: #d97706;
   font-size: 12px;
 }
+.import-error-panel {
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid #ef4444;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
+}
+
+.import-error-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.import-error-panel p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
